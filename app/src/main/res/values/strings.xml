@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Kelasku</string>
+    <string name="app_name">Kelas Kita</string>
+    <string name="string_no_class"><u>Kok kelasku engga ada? 😢</u></string>
 </resources>

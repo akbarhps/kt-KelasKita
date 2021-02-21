@@ -1,16 +1,52 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Kelasku" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Kelasku" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/black_500</item>
+        <item name="colorPrimaryVariant">@color/black_700</item>
+        <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorOnPrimary</item>
+        <item name="colorControlHighlight">@color/white</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="ToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+        <item name="android:fontFamily">@font/josefin_bold</item>
+    </style>
+
+    <style name="ProgressBarStyle" parent="Theme.Kelasku">
+        <item name="colorAccent">@color/white</item>
+    </style>
+
+    <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/text_input_layout_color</item>
+        <item name="boxStrokeErrorColor">@color/text_input_layout_error_color</item>
+        <item name="endIconTint">@color/white</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="hintTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <style name="LoginButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/black_500</item>
+        <item name="cornerRadius">30dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="colorControlHighlight">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <item name="colorControlHighlight">@color/white</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="colorControlHighlight">@color/white</item>
+    </style>
+
 </resources>
