@@ -1,5 +1,5 @@
 package com.charuniverse.kelasku.util
 
 object Constants {
-    const val MESSAGING_TOPIC = "ILKOM C 2019"
+    const val BASE_URL = "https://kelasku-api-services.herokuapp.com/"
 }
