@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph.xml"
+    app:startDestination="@id/announcementFragment">
+
+    <fragment
+        android:id="@+id/announcementFragment"
+        android:name="com.charuniverse.kelasku.ui.main.announcement.AnnouncementFragment"
+        android:label="Pemberitahuan 📣"
+        tools:layout="@layout/fragment_announcement" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/assignmentFragment"
+        android:name="com.charuniverse.kelasku.ui.main.assignment.AssignmentFragment"
+        android:label="Daftar Tugas 💪"
+        tools:layout="@layout/fragment_assignment" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.charuniverse.kelasku.ui.main.profile.ProfileFragment"
+        android:label="Profil 😎"
+        tools:layout="@layout/fragment_profile" />
+
+</navigation>
