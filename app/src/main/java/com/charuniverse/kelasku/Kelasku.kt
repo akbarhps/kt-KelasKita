@@ -1,7 +1,11 @@
 package com.charuniverse.kelasku
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.charuniverse.kelasku.util.AppPreferences
 
-@HiltAndroidApp
-class Kelasku : Application()
+class Kelasku : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        AppPreferences.init(this)
+    }
+}
