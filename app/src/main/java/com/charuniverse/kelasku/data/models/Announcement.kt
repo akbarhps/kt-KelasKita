@@ -5,14 +5,13 @@ import com.charuniverse.kelasku.util.AppPreferences
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Assignment(
-    val course: String = "",
+data class Announcement(
     val title: String = "",
-    val description: String = "",
+    val body: String = "",
     val url: String = "",
-    val creator: String = "",
-    val ignoreList: List<String> = listOf(),
+    val imageUrl: String = "",
     val classCode: String = AppPreferences.userClassCode,
-    val createTimestamp: Long = System.currentTimeMillis() / 1000,
+    val creator: String = AppPreferences.userEmail,
     val id: String = (System.currentTimeMillis() / 1000).toString(),
+    val createTimestamp: Long = System.currentTimeMillis() / 1000,
 ) : Parcelable
