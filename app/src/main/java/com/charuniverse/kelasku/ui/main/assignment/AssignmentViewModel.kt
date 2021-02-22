@@ -14,13 +14,14 @@ class AssignmentViewModel : ViewModel() {
     sealed class UIEvents {
         object Idle : UIEvents()
         object Loading : UIEvents()
+        object NoData : UIEvents()
         class Error(val error: String) : UIEvents()
     }
 
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val event: LiveData<UIEvents> = _events
 
-    private val _assignments = MutableLiveData<List<Assignment>>()
+    private val _assignments = MutableLiveData<List<Assignment>>(listOf())
     val assignments: LiveData<List<Assignment>> = _assignments
 
     init {
@@ -48,6 +49,10 @@ class AssignmentViewModel : ViewModel() {
             }
         }
         _assignments.value = filteredData
-        _events.value = UIEvents.Idle
+        _events.value = if (filteredData.isEmpty()) {
+            UIEvents.NoData
+        } else {
+            UIEvents.Idle
+        }
     }
 }

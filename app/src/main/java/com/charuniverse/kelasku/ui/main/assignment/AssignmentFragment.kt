@@ -3,13 +3,13 @@ package com.charuniverse.kelasku.ui.main.assignment
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.ui.main.assignment.create.CreateAssignmentActivity
 import com.charuniverse.kelasku.util.AppPreferences
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_assignment.*
 
 class AssignmentFragment : Fragment(R.layout.fragment_assignment) {
@@ -46,13 +46,19 @@ class AssignmentFragment : Fragment(R.layout.fragment_assignment) {
     private fun eventsListener() {
         viewModel.event.observe(viewLifecycleOwner, {
             when (it) {
-                is AssignmentViewModel.UIEvents.Loading ->
-                    toggleRefreshAnimation(true)
-                is AssignmentViewModel.UIEvents.Error -> {
-                    buildSnackBar(it.error)
+                is AssignmentViewModel.UIEvents.Loading -> toggleRefreshAnimation(true)
+                is AssignmentViewModel.UIEvents.NoData -> {
+                    toggleNoDataState(true)
                     toggleRefreshAnimation(false)
                 }
-                else -> toggleRefreshAnimation(false)
+                is AssignmentViewModel.UIEvents.Error -> {
+                    Toast.makeText(requireContext(), it.error, Toast.LENGTH_SHORT).show()
+                    toggleRefreshAnimation(false)
+                }
+                else -> {
+                    toggleNoDataState(false)
+                    toggleRefreshAnimation(false)
+                }
             }
         })
     }
@@ -66,15 +72,16 @@ class AssignmentFragment : Fragment(R.layout.fragment_assignment) {
         })
     }
 
-    private fun toggleRefreshAnimation(show: Boolean) {
-        srAssignment.isRefreshing = show
+    private fun toggleNoDataState(show: Boolean) {
+        svNoAssignmentState.visibility = if (show) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
-    private fun buildSnackBar(message: String) {
-        Snackbar.make(baseView, message, Snackbar.LENGTH_LONG)
-            .setAction("Refresh") {
-                viewModel.getAssignment()
-            }.show()
+    private fun toggleRefreshAnimation(show: Boolean) {
+        srAssignment.isRefreshing = show
     }
 
     override fun onResume() {

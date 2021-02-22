@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Kelas Kita</string>
+    <string name="loading">Loading</string>
+    <string name="refresh">Refresh 🔃</string>
+
     <string name="string_no_class"><u>Kok kelasku engga ada? 😢</u></string>
+    <string name="app_intro">Lelah karena setiap cari tugas harus buka e-learning dulu? aplikasi ini solusinya 🌟</string>
+    <string name="error_while_getting_data">Terjadi error ketika mengambil tugas, coba periksa kembali jaringanmu</string>
+    <string name="no_assignment_text">Saat ini kamu tidak memiliki tugas, saatnya explore hal baru 🚀</string>
 </resources>
