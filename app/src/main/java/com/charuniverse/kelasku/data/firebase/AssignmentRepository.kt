@@ -19,11 +19,11 @@ object AssignmentRepository {
     }
 
     suspend fun getAssignment(): List<Assignment> {
-        val lastWeekInMillis = System.currentTimeMillis() / 1000 - 604800
+        val lastWeekInSeconds = System.currentTimeMillis() / 1000 - 604800
         val userClassCode = AppPreferences.userClassCode
         val documents = assignmentRef
             .whereEqualTo("classCode", userClassCode)
-            .whereGreaterThanOrEqualTo("createTimestamp", lastWeekInMillis)
+            .whereGreaterThanOrEqualTo("createTimestamp", lastWeekInSeconds)
             .orderBy("createTimestamp", Query.Direction.DESCENDING)
             .get().await()
         return documents.toObjects(Assignment::class.java)
