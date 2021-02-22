@@ -7,4 +7,5 @@
     <string name="app_intro">Lelah karena setiap cari tugas harus buka e-learning dulu? aplikasi ini solusinya 🌟</string>
     <string name="error_while_getting_data">Terjadi error ketika mengambil tugas, coba periksa kembali jaringanmu</string>
     <string name="no_assignment_text">Saat ini kamu tidak memiliki tugas, saatnya explore hal baru 🚀</string>
+    <string name="no_announcement">Engga ada pengumuman apa apa nih, sepi bat sepi dah 🙃</string>
 </resources>

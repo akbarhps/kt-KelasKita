@@ -39,11 +39,18 @@ class AnnouncementFragment : Fragment(R.layout.fragment_announcement) {
             when (it) {
                 is AnnouncementViewModel.UIEvents.Loading ->
                     toggleRefreshAnimation(true)
+                is AnnouncementViewModel.UIEvents.NoData -> {
+                    toggleNoDataState(true)
+                    toggleRefreshAnimation(false)
+                }
                 is AnnouncementViewModel.UIEvents.Error -> {
                     buildSnackBar(it.error)
                     toggleRefreshAnimation(false)
                 }
-                else -> toggleRefreshAnimation(false)
+                else -> {
+                    toggleNoDataState(false)
+                    toggleRefreshAnimation(false)
+                }
             }
         })
     }
@@ -64,6 +71,14 @@ class AnnouncementFragment : Fragment(R.layout.fragment_announcement) {
         fabCreateAnnouncement.setOnClickListener {
             requireActivity()
                 .startActivity(Intent(requireContext(), CreateAnnouncementActivity::class.java))
+        }
+    }
+
+    private fun toggleNoDataState(show: Boolean) {
+        svNoAnnouncementState.visibility = if (show) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
     }
 

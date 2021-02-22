@@ -13,6 +13,7 @@ class AnnouncementViewModel : ViewModel() {
     sealed class UIEvents {
         object Idle : UIEvents()
         object Loading : UIEvents()
+        object NoData : UIEvents()
         class Error(val error: String) : UIEvents()
     }
 
@@ -31,8 +32,13 @@ class AnnouncementViewModel : ViewModel() {
 
     fun getAnnouncement() = viewModelScope.launch {
         _events.value = try {
-            _announcements.value = AnnouncementRepository.getAnnouncement()
-            UIEvents.Idle
+            val documents = AnnouncementRepository.getAnnouncement()
+            if (documents.isEmpty()) {
+                UIEvents.NoData
+            } else {
+                _announcements.value = documents
+                UIEvents.Idle
+            }
         } catch (e: Exception) {
             UIEvents.Error(e.message.toString())
         }
