@@ -10,6 +10,10 @@ object AuthenticationUtil {
         FirebaseAuth.getInstance()
     }
 
+    fun isUserSignedIn(): Boolean {
+        return authRef.currentUser != null
+    }
+
     suspend fun register(email: String, password: String) {
         authRef.createUserWithEmailAndPassword(email, password).await()
     }

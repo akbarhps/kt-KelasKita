@@ -24,9 +24,14 @@ object AssignmentRepository {
         val documents = assignmentRef
             .whereEqualTo("classCode", userClassCode)
             .whereGreaterThanOrEqualTo("createTimestamp", lastWeekInSeconds)
-            .orderBy("createTimestamp", Query.Direction.DESCENDING)
+            .orderBy("createTimestamp", Query.Direction.ASCENDING)
             .get().await()
         return documents.toObjects(Assignment::class.java)
+    }
+
+    suspend fun getAssignmentById(id: String): Assignment? {
+        val document = assignmentRef.document(id).get().await()
+        return document.toObject(Assignment::class.java)
     }
 
     suspend fun addToIgnoreList(id: String) {

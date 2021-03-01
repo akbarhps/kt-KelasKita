@@ -15,15 +15,20 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="ToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
-        <item name="android:fontFamily">@font/josefin_bold</item>
-    </style>
-
     <style name="ProgressBarStyle" parent="Theme.Kelasku">
         <item name="colorAccent">@color/white</item>
     </style>
 
-    <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+    <style name="BoldText" parent="Theme.Kelasku">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="NormalText" parent="Theme.Kelasku">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="boxStrokeColor">@color/text_input_layout_color</item>
         <item name="boxStrokeErrorColor">@color/text_input_layout_error_color</item>
         <item name="endIconTint">@color/white</item>

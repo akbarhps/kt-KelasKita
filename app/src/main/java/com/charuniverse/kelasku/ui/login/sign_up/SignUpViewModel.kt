@@ -71,6 +71,7 @@ class SignUpViewModel : ViewModel() {
             AuthenticationUtil.register(email, password)
             UserRepository.addUser(user)
             MessagingUtil.subscribeToTopic(classCode)
+            MessagingUtil.subscribeToTopic("All")
             AppPreferences.saveUserInfo(user)
             UIEvents.Success
         } catch (e: Exception) {

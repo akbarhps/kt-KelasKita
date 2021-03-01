@@ -11,76 +11,64 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Class
 import com.charuniverse.kelasku.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_sign_up.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
 
-    private lateinit var baseView: View
+    enum class SpinnerEvents {
+        SUCCESS,
+        LOADING,
+        ERROR
+    }
+
     private var classInfo: Class? = null
     private lateinit var viewModel: SignUpViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        baseView = view
         viewModel = ViewModelProvider(requireActivity())
             .get(SignUpViewModel::class.java)
 
-        eventListener()
-        classesListener()
-        buttonClickListener()
+        uiEventsListener()
+        uiManager()
     }
 
-    private fun eventListener() {
+    private fun uiEventsListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
-                is SignUpViewModel.UIEvents.NoData -> {
-                    toggleSpinnerProgressBar("ERROR")
-                }
-                is SignUpViewModel.UIEvents.Loading -> {
-                    toggleButtonProgressBar(true)
-                }
-                is SignUpViewModel.UIEvents.Success -> {
-                    updateUi()
-                }
+                is SignUpViewModel.UIEvents.Idle -> Unit
+                is SignUpViewModel.UIEvents.NoData -> toggleSpinnerProgressBar(SpinnerEvents.ERROR)
+                is SignUpViewModel.UIEvents.Loading -> toggleButtonProgressBar(true)
+                is SignUpViewModel.UIEvents.Success -> updateUi()
                 is SignUpViewModel.UIEvents.Error -> {
                     buildSnackBar(it.error)
                     toggleButtonProgressBar(false)
                 }
-                else -> Unit
             }
         })
     }
 
-    private fun classesListener() = CoroutineScope(Dispatchers.Main).launch {
+    private fun uiManager() {
         viewModel.classes.observe(viewLifecycleOwner, {
-            toggleSpinnerProgressBar("SUCCESS")
+            toggleSpinnerProgressBar(SpinnerEvents.SUCCESS)
             val className = viewModel.getClassName()
             setupSpinner(className)
         })
-    }
 
-    private fun setupSpinner(className: List<String>) {
-        spinnerAvailableClass.adapter =
-            ArrayAdapter(requireContext(), R.layout.spinner_text_view, className)
-        spinnerAvailableClass.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>, view: View?, position: Int, id: Long
-            ) {
-                classInfo = viewModel.getClassInfoByPosition(position)
+        ivRefreshAvailableClass.setOnClickListener {
+            startRefreshAnimation(it)
+            if (classInfo == null) {
+                toggleSpinnerProgressBar(SpinnerEvents.LOADING)
+                viewModel.getAvailableClass()
             }
         }
-    }
 
-    private fun buttonClickListener() {
         cvSignUp.setOnClickListener {
             hideKeyboard()
             if (classInfo == null) {
@@ -91,34 +79,43 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             val password = etSignUpPassword.text.toString()
             viewModel.signUp(email, password, classInfo!!.name, classInfo!!.code)
         }
-        cvOpenSignInPage.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
-        ivRefreshAvailableClass.setOnClickListener {
-            startRefreshAnimation(it)
-            if (classInfo == null) {
-                toggleSpinnerProgressBar("LOADING")
-                viewModel.getAvailableClass()
-            }
-        }
+
         tvSignUpNoClass.setOnClickListener {
             DialogNoClass().show(parentFragmentManager, null)
         }
+
+        cvOpenSignInPage.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
-    private fun toggleSpinnerProgressBar(state: String) {
-        when (state) {
-            "SUCCESS" -> {
+    private fun setupSpinner(className: List<String>) {
+        spinnerAvailableClass.adapter =
+            ArrayAdapter(requireContext(), R.layout.spinner_text_view, className)
+
+        spinnerAvailableClass.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: View?, position: Int, id: Long
+            ) {
+                classInfo = viewModel.getClassInfoByPosition(position)
+            }
+        }
+    }
+
+    private fun toggleSpinnerProgressBar(event: SpinnerEvents) {
+        when (event) {
+            SpinnerEvents.SUCCESS -> {
                 spinnerAvailableClass.visibility = View.VISIBLE
                 progressAvailableClass.visibility = View.GONE
                 tvAvailableClassError.visibility = View.GONE
             }
-            "LOADING" -> {
+            SpinnerEvents.LOADING -> {
                 spinnerAvailableClass.visibility = View.GONE
                 progressAvailableClass.visibility = View.VISIBLE
                 tvAvailableClassError.visibility = View.GONE
             }
-            else -> {
+            SpinnerEvents.ERROR -> {
                 spinnerAvailableClass.visibility = View.GONE
                 progressAvailableClass.visibility = View.GONE
                 tvAvailableClassError.visibility = View.VISIBLE
@@ -129,12 +126,12 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     private fun toggleButtonProgressBar(show: Boolean) {
         if (show) {
             cvSignUp.isEnabled = false
-            llSignUpLoading.visibility = View.VISIBLE
-            llSignUpRegister.visibility = View.GONE
+            llSignUpProgress.visibility = View.VISIBLE
+            llSignUpText.visibility = View.GONE
         } else {
             cvSignUp.isEnabled = true
-            llSignUpLoading.visibility = View.GONE
-            llSignUpRegister.visibility = View.VISIBLE
+            llSignUpProgress.visibility = View.GONE
+            llSignUpText.visibility = View.VISIBLE
         }
     }
 
@@ -154,8 +151,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     }
 
     private fun buildSnackBar(message: String) {
-        Snackbar.make(baseView, message, Snackbar.LENGTH_LONG)
-            .show()
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun hideKeyboard() {

@@ -2,28 +2,17 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clCreateAssignmentRoot"
+    android:id="@+id/clCreateAnnouncementRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".ui.main.assignment.create.CreateAssignmentActivity">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/assignmentToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ToolbarStyle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="Tambahkan Tugas 📚" />
+    tools:context=".ui.main.announcement.create.AnnouncementCreateFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/cvCreateAssignment"
-        app:layout_constraintTop_toBottomOf="@+id/assignmentToolbar">
+        app:layout_constraintBottom_toTopOf="@+id/cvCreateAnnouncement"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,33 +20,40 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <CheckBox
+                android:id="@+id/cbAnnouncementToAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kirim ke semua"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilCreateAssignmentCourse"
-                style="@style/LoginTextInputLayoutStyle"
+                android:id="@+id/tilCreateAnnouncementUrl"
+                style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:hint="Matakuliah"
-                app:errorTextColor="@color/red">
+                android:hint="Link (Opsional)">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCreateAssignmentCourse"
+                    android:id="@+id/etCreateAnnouncementUrl"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="text"
+                    android:inputType="textUri"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilCreateAssignmentTitle"
-                style="@style/LoginTextInputLayoutStyle"
+                android:id="@+id/tilAnnouncementTitle"
+                style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="10dp"
-                android:hint="Judul Tugas">
+                android:hint="Judul">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCreateAssignmentTitle"
+                    android:id="@+id/etAnnouncementTitle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="text"
@@ -66,35 +62,18 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilCreateAssignmentDesc"
-                style="@style/LoginTextInputLayoutStyle"
+                android:id="@+id/tilAnnouncementDesc"
+                style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="10dp"
                 android:hint="Deskripsi">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCreateAssignmentDesc"
+                    android:id="@+id/etAnnouncementDesc"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textMultiLine"
-                    android:textColor="@color/white" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilCreateAssignmentUrl"
-                style="@style/LoginTextInputLayoutStyle"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="10dp"
-                android:hint="Link *Opsional">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCreateAssignmentUrl"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textUri"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -104,7 +83,7 @@
     </ScrollView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cvCreateAssignment"
+        android:id="@+id/cvCreateAnnouncement"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:elevation="6dp"
@@ -113,7 +92,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
-            android:id="@+id/llCreateAssignmentLoading"
+            android:id="@+id/llCreateAnnouncementProgress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -129,30 +108,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/josefin_bold"
                 android:text="Loading"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:theme="@style/BoldText" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/llCreateAssignmentText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/josefin_bold"
-                android:text="Post Tugas 😭"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvCreateAnnouncementText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Kirim Pemberitahuan 🚀"
+            android:textSize="18sp"
+            android:theme="@style/NormalText" />
 
     </androidx.cardview.widget.CardView>
 

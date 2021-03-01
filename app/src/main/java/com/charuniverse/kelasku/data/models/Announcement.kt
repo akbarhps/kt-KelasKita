@@ -9,9 +9,9 @@ data class Announcement(
     val title: String = "",
     val body: String = "",
     val url: String = "",
-    val imageUrl: String = "",
     val classCode: String = AppPreferences.userClassCode,
     val creator: String = AppPreferences.userEmail,
     val id: String = (System.currentTimeMillis() / 1000).toString(),
     val createTimestamp: Long = System.currentTimeMillis() / 1000,
+    val hideList: List<String> = listOf(),
 ) : Parcelable

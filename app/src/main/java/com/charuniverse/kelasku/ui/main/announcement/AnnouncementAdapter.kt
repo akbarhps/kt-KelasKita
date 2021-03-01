@@ -1,23 +1,24 @@
 package com.charuniverse.kelasku.ui.main.announcement
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Announcement
-import com.charuniverse.kelasku.ui.main.announcement.detail.AnnouncementDetailActivity
 import kotlinx.android.synthetic.main.recycler_announcement.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AnnouncementAdapter(
-    private val activity: Activity,
+    private val events: AnnouncementEvents,
     private val announcements: List<Announcement>
 ) : RecyclerView.Adapter<AnnouncementAdapter.ViewHolder>() {
+
+    interface AnnouncementEvents {
+        fun onItemClick(announcement: Announcement)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -30,27 +31,19 @@ class AnnouncementAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val announcement = announcements[position]
-        holder.itemView.let {
-            it.tvAnnouncementListDate.text = convertLongToDate(announcement.createTimestamp)
-            it.tvAnnouncementListTitle.text = announcement.title
 
-            it.setOnClickListener {
-                updateUI(announcement)
-            }
+        holder.itemView.apply {
+            tvAnnouncementListDate.text = convertLongToDate(announcement.createTimestamp)
+            tvAnnouncementListTitle.text = announcement.title
+            setOnClickListener { events.onItemClick(announcement) }
         }
     }
 
-    private fun updateUI(announcement: Announcement) {
-        val intent = Intent(activity, AnnouncementDetailActivity::class.java)
-        intent.putExtra("Announcement", announcement)
-        activity.startActivity(intent)
-    }
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     @SuppressLint("SimpleDateFormat")
     private fun convertLongToDate(time: Long): String {
         val date = Date(time * 1000)
-        return SimpleDateFormat("E, dd/MM/yyy").format(date)
+        return SimpleDateFormat("dd/MM/yyy").format(date)
     }
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }

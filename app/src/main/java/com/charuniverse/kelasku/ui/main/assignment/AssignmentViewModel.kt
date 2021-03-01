@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.charuniverse.kelasku.data.firebase.AssignmentRepository
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.util.AppPreferences
+import com.charuniverse.kelasku.util.Globals
 import kotlinx.coroutines.launch
 
 class AssignmentViewModel : ViewModel() {
@@ -24,16 +25,12 @@ class AssignmentViewModel : ViewModel() {
     private val _assignments = MutableLiveData<List<Assignment>>(listOf())
     val assignments: LiveData<List<Assignment>> = _assignments
 
-    init {
-        if (_assignments.value.isNullOrEmpty()) {
-            _events.value = UIEvents.Loading
-            getAssignment()
-        }
-    }
-
     fun getAssignment() = viewModelScope.launch {
+        _events.value = UIEvents.Loading
+
         try {
             val documents = AssignmentRepository.getAssignment()
+            Globals.refreshAssignment = false
             filterData(documents)
         } catch (e: Exception) {
             _events.value = UIEvents.Error(e.message.toString())
@@ -42,13 +39,13 @@ class AssignmentViewModel : ViewModel() {
 
     private fun filterData(data: List<Assignment>) {
         val userEmail = AppPreferences.userEmail
-        val filteredData = mutableListOf<Assignment>()
-        data.forEach {
-            if (!it.ignoreList.contains(userEmail)) {
-                filteredData.add(it)
-            }
+
+        val filteredData = data.filter {
+            !it.ignoreList.contains(userEmail)
         }
+
         _assignments.value = filteredData
+
         _events.value = if (filteredData.isEmpty()) {
             UIEvents.NoData
         } else {

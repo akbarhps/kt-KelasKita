@@ -1,22 +1,18 @@
 package com.charuniverse.kelasku.ui.main.assignment
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Assignment
-import com.charuniverse.kelasku.ui.main.assignment.detail.AssignmentDetailActivity
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.recycler_assignment.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AssignmentAdapter(
-    private val activity: Activity,
+    private val events: AssignmentEvents,
     private val assignments: List<Assignment>
 ) : RecyclerView.Adapter<AssignmentAdapter.ViewHolder>() {
 
@@ -36,21 +32,19 @@ class AssignmentAdapter(
             it.tvAssignmentListTitle.text = assignment.title
 
             it.setOnClickListener {
-                updateUI(assignment)
+                events.onItemClick(assignment)
             }
         }
-    }
-
-    private fun updateUI(assignment: Assignment) {
-        val intent = Intent(activity, AssignmentDetailActivity::class.java)
-        intent.putExtra("Assignment", assignment)
-        activity.startActivity(intent)
     }
 
     @SuppressLint("SimpleDateFormat")
     private fun convertLongToDate(time: Long): String {
         val date = Date(time * 1000)
-        return SimpleDateFormat("E, dd/MM/yyy").format(date)
+        return SimpleDateFormat("dd/MM/yyy HH:mm").format(date)
+    }
+
+    interface AssignmentEvents {
+        fun onItemClick(assignment: Assignment)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

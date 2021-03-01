@@ -30,12 +30,12 @@ class SignInViewModel : ViewModel() {
     }
 
     private fun authenticateUser(email: String, password: String) = viewModelScope.launch {
-        _events.value = UIEvents.Loading
         _events.value = try {
             AuthenticationUtil.login(email, password)
-            val user = UserRepository.getCurrentUser(email)!!
-            AppPreferences.saveUserInfo(user)
+            val user = UserRepository.getCurrentUser(email)
             MessagingUtil.subscribeToTopic(user.classCode)
+            MessagingUtil.subscribeToTopic("All")
+            AppPreferences.saveUserInfo(user)
             UIEvents.Success
         } catch (e: Exception) {
             UIEvents.Error(e.message.toString())

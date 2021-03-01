@@ -1,26 +1,27 @@
 package com.charuniverse.kelasku.ui.main.assignment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.charuniverse.kelasku.R
-import com.charuniverse.kelasku.ui.main.assignment.create.CreateAssignmentActivity
+import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.util.AppPreferences
+import com.charuniverse.kelasku.util.Globals
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_assignment.*
 
-class AssignmentFragment : Fragment(R.layout.fragment_assignment) {
+class AssignmentFragment : Fragment(R.layout.fragment_assignment),
+    AssignmentAdapter.AssignmentEvents {
 
-    private lateinit var baseView: View
     private lateinit var viewModel: AssignmentViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        baseView = view
         viewModel = ViewModelProvider(requireActivity())
             .get(AssignmentViewModel::class.java)
 
@@ -28,54 +29,53 @@ class AssignmentFragment : Fragment(R.layout.fragment_assignment) {
             fabCreateAssignment.visibility = View.VISIBLE
         }
 
-        uiListener()
         eventsListener()
-        assignmentListener()
-    }
-
-    private fun uiListener() {
-        srAssignment.setOnRefreshListener {
-            viewModel.getAssignment()
-        }
-        fabCreateAssignment.setOnClickListener {
-            requireActivity()
-                .startActivity(Intent(requireContext(), CreateAssignmentActivity::class.java))
-        }
+        uiManager()
     }
 
     private fun eventsListener() {
         viewModel.event.observe(viewLifecycleOwner, {
-            when (it) {
-                is AssignmentViewModel.UIEvents.Loading -> {
-                    toggleRefreshAnimation(true)
-                }
+            val isLoading = when (it) {
+                is AssignmentViewModel.UIEvents.Loading -> true
                 is AssignmentViewModel.UIEvents.NoData -> {
                     toggleNoDataState(true)
-                    toggleRefreshAnimation(false)
+                    false
                 }
                 is AssignmentViewModel.UIEvents.Error -> {
                     buildSnackBar(it.error)
-                    toggleRefreshAnimation(false)
+                    false
                 }
                 else -> {
                     toggleNoDataState(false)
-                    toggleRefreshAnimation(false)
+                    false
                 }
             }
+            toggleRefreshAnimation(isLoading)
         })
     }
 
-    private fun assignmentListener() {
+    private fun uiManager() {
         viewModel.assignments.observe(viewLifecycleOwner, { assignments ->
-            recyclerAssignment.let {
-                it.layoutManager = LinearLayoutManager(requireContext())
-                it.adapter = AssignmentAdapter(requireActivity(), assignments)
+            val assignmentAdapter = AssignmentAdapter(this, assignments)
+            recyclerAssignment.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = assignmentAdapter
             }
         })
+
+        srAssignment.setOnRefreshListener {
+            viewModel.getAssignment()
+        }
+
+        fabCreateAssignment.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_assignmentFragment_to_assignmentCreateFragment
+            )
+        }
     }
 
     private fun toggleNoDataState(show: Boolean) {
-        svNoAssignmentState.visibility = if (show) {
+        viewNoAssignment.visibility = if (show) {
             View.VISIBLE
         } else {
             View.GONE
@@ -87,14 +87,23 @@ class AssignmentFragment : Fragment(R.layout.fragment_assignment) {
     }
 
     private fun buildSnackBar(message: String) {
-        Snackbar.make(baseView, message, Snackbar.LENGTH_LONG)
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
             .setAction("Refresh") {
                 viewModel.getAssignment()
             }.show()
     }
 
+    override fun onItemClick(assignment: Assignment) {
+        val bundle = bundleOf("assignment" to assignment)
+        findNavController().navigate(
+            R.id.action_assignmentFragment_to_assignmentDetailFragment, bundle
+        )
+    }
+
     override fun onResume() {
         super.onResume()
-        viewModel.getAssignment()
+        if (Globals.refreshAssignment) {
+            viewModel.getAssignment()
+        }
     }
 }

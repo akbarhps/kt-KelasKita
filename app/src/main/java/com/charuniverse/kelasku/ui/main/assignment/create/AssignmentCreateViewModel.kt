@@ -7,9 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.data.retrofit.RetrofitBuilder
+import com.charuniverse.kelasku.ui.main.announcement.create.AnnouncementCreateViewModel
+import com.charuniverse.kelasku.util.AppPreferences
+import com.charuniverse.kelasku.util.Globals
 import kotlinx.coroutines.launch
 
-class CreateAssignmentViewModel : ViewModel() {
+class AssignmentCreateViewModel : ViewModel() {
 
     sealed class UIEvents {
         object Idle : UIEvents()
@@ -23,23 +26,36 @@ class CreateAssignmentViewModel : ViewModel() {
 
     fun createAssignment(assignment: Assignment) {
         _events.value = UIEvents.Loading
-        if (assignment.course.isEmpty()) {
-            _events.value = UIEvents.Error("Anda belum memasukkan matakuliah")
-        } else if (assignment.title.isEmpty()) {
-            _events.value = UIEvents.Error("Anda belum memasukkan judul tugas")
-        } else if (assignment.description.isEmpty()) {
-            _events.value = UIEvents.Error("Anda belum memasukkan deskripsi tugas")
-        } else if (assignment.url.isNotEmpty() && !URLUtil.isValidUrl(assignment.url)) {
-            _events.value =
-                UIEvents.Error("Format url yang anda masukkan salah (harus menggunakan http://)")
-        } else {
-            addAssignment(assignment)
+
+        assignment.apply {
+            if(course.isBlank()) {
+                _events.value = UIEvents.Error("Anda belum memasukkan matakuliah")
+                return
+            }
+
+            if (title.isBlank()) {
+                _events.value = UIEvents.Error("Anda belum memasukkan matakuliah")
+                return
+            }
+
+            if (description.isBlank()) {
+                _events.value = UIEvents.Error("Anda belum memasukkan judul tugas")
+                return
+            }
+
+            if (url.isNotEmpty() && !URLUtil.isValidUrl(url)) {
+                _events.value = UIEvents.Error("Format url yang anda masukkan salah (harus menggunakan http://)")
+                return
+            }
+
+            addAssignment(this)
         }
     }
 
     private fun addAssignment(assignment: Assignment) = viewModelScope.launch {
         _events.value = try {
             RetrofitBuilder.get().createAssignment(assignment)
+            Globals.refreshAssignment = true
             UIEvents.Success
         } catch (e: Exception) {
             UIEvents.Error(e.message.toString())

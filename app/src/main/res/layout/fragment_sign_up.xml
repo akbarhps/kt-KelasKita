@@ -8,6 +8,7 @@
     tools:context=".ui.login.sign_up.SignUpFragment">
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/cvOpenSignInPage"
@@ -24,10 +25,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/josefin_bold"
-                android:text="Daftar 🆕"
-                android:textColor="@color/white"
-                android:textSize="26sp" />
+                android:text="@string/register_tag_line"
+                android:textSize="26sp"
+                android:theme="@style/BoldText" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -62,10 +62,10 @@
                         android:id="@+id/tvAvailableClassError"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:fontFamily="@font/josefin_bold"
                         android:gravity="center"
-                        android:text="Terjadi Kesalahan Jaringan"
+                        android:text="@string/network_error"
                         android:textColor="@color/red"
+                        android:textStyle="bold"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -83,11 +83,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilSignUpEmail"
-                style="@style/LoginTextInputLayoutStyle"
+                style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="16dp"
-                android:hint="Email">
+                android:hint="@string/email">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etSignUpEmail"
@@ -100,11 +100,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilSignUpPassword"
-                style="@style/LoginTextInputLayoutStyle"
+                style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="16dp"
-                android:hint="Kata Sandi">
+                android:hint="@string/password">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etSignUpPassword"
@@ -122,13 +122,13 @@
                 android:layout_marginTop="24dp"
                 android:elevation="6dp"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/black_700"
-                app:cardCornerRadius="30dp">
+                app:cardCornerRadius="16dp">
 
                 <LinearLayout
-                    android:id="@+id/llSignUpLoading"
+                    android:id="@+id/llSignUpProgress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@drawable/bg_progress_bar"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:visibility="gone">
@@ -142,47 +142,51 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
-                        android:fontFamily="@font/josefin_bold"
-                        android:text="Loading ..."
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:text="@string/loading"
+                        android:textSize="16sp"
+                        android:theme="@style/BoldText" />
 
                 </LinearLayout>
 
+
                 <LinearLayout
-                    android:id="@+id/llSignUpRegister"
+                    android:id="@+id/llSignUpText"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_progress_bar"
+                    android:gravity="center">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:fontFamily="@font/josefin_bold"
-                        android:text="Daftar"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:text="@string/register"
+                        android:textSize="16sp"
+                        android:theme="@style/NormalText" />
 
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/tvSignUpNoClass"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/josefin_medium"
-                android:text="@string/string_no_class"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
+
 
         </LinearLayout>
 
     </ScrollView>
+
+    <TextView
+        android:id="@+id/tvSignUpNoClass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="12dp"
+        android:text="@string/string_no_class"
+        android:textSize="16sp"
+        android:theme="@style/NormalText"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvOpenSignInPage"
@@ -197,9 +201,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="@font/josefin_medium"
-            android:text="Sudah ada akun? Masuk 🎇"
-            android:textColor="@color/white" />
+            android:text="@string/already_have_account"
+            android:theme="@style/NormalText" />
 
     </androidx.cardview.widget.CardView>
 

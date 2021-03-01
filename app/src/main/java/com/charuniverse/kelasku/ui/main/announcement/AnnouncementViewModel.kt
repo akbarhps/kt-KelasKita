@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charuniverse.kelasku.data.firebase.AnnouncementRepository
 import com.charuniverse.kelasku.data.models.Announcement
+import com.charuniverse.kelasku.util.AppPreferences
+import com.charuniverse.kelasku.util.Globals
 import kotlinx.coroutines.launch
 
 class AnnouncementViewModel : ViewModel() {
@@ -23,24 +25,31 @@ class AnnouncementViewModel : ViewModel() {
     private val _announcements = MutableLiveData<List<Announcement>>(listOf())
     val announcements: LiveData<List<Announcement>> = _announcements
 
-    init {
-        if (_announcements.value!!.isEmpty()) {
-            _events.value = UIEvents.Loading
-            getAnnouncement()
+    fun getAnnouncement() = viewModelScope.launch {
+        _events.value = UIEvents.Loading
+
+        try {
+            val documents = AnnouncementRepository.getAnnouncement()
+            Globals.refreshAnnouncement = false
+            filterData(documents)
+        } catch (e: Exception) {
+            _events.value = UIEvents.Error(e.message.toString())
         }
     }
 
-    fun getAnnouncement() = viewModelScope.launch {
-        _events.value = try {
-            val documents = AnnouncementRepository.getAnnouncement()
-            if (documents.isEmpty()) {
-                UIEvents.NoData
-            } else {
-                _announcements.value = documents
-                UIEvents.Idle
-            }
-        } catch (e: Exception) {
-            UIEvents.Error(e.message.toString())
+    private fun filterData(data: List<Announcement>) {
+        val userEmail = AppPreferences.userEmail
+
+        val filteredData = data.filter {
+            !it.hideList.contains(userEmail)
+        }
+
+        _announcements.value = filteredData
+
+        _events.value = if (filteredData.isEmpty()) {
+            UIEvents.NoData
+        } else {
+            UIEvents.Idle
         }
     }
 }

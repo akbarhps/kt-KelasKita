@@ -10,18 +10,76 @@
         android:name="com.charuniverse.kelasku.ui.main.announcement.AnnouncementFragment"
         android:label="Pemberitahuan 📣"
         tools:layout="@layout/fragment_announcement" >
+        <action
+            android:id="@+id/action_announcementFragment_to_announcementDetailFragment"
+            app:destination="@id/announcementDetailFragment" />
+        <action
+            android:id="@+id/action_announcementFragment_to_announcementCreateFragment"
+            app:destination="@id/announcementCreateFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/assignmentFragment"
         android:name="com.charuniverse.kelasku.ui.main.assignment.AssignmentFragment"
         android:label="Daftar Tugas 💪"
-        tools:layout="@layout/fragment_assignment" />
+        tools:layout="@layout/fragment_assignment" >
+        <action
+            android:id="@+id/action_assignmentFragment_to_assignmentDetailFragment"
+            app:destination="@id/assignmentDetailFragment" />
+        <action
+            android:id="@+id/action_assignmentFragment_to_assignmentCreateFragment"
+            app:destination="@id/assignmentCreateFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.charuniverse.kelasku.ui.main.profile.ProfileFragment"
         android:label="Profil 😎"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/assignmentDetailFragment"
+        android:name="com.charuniverse.kelasku.ui.main.assignment.detail.AssignmentDetailFragment"
+        android:label="📚"
+        tools:layout="@layout/fragment_assignment_detail">
+        <argument
+            android:name="assignment"
+            android:defaultValue="@null"
+            app:argType="com.charuniverse.kelasku.data.models.Assignment"
+            app:nullable="true" />
+        <argument
+            android:name="id"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <deepLink
+            android:id="@+id/assignmentDeepLink"
+            app:uri="kelaskita.glitch.me/tugas/{id}" />
+    </fragment>
+    <fragment
+        android:id="@+id/announcementDetailFragment"
+        android:name="com.charuniverse.kelasku.ui.main.announcement.detail.AnnouncementDetailFragment"
+        android:label="📣">
+        <argument
+            android:name="announcement"
+            android:defaultValue="@null"
+            app:argType="com.charuniverse.kelasku.data.models.Announcement"
+            app:nullable="true" />
+        <argument
+            android:name="id"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <deepLink
+            android:id="@+id/announcementDeepLink"
+            app:uri="kelaskita.glitch.me/pemberitahuan/{id}" />
+    </fragment>
+    <fragment
+        android:id="@+id/announcementCreateFragment"
+        android:name="com.charuniverse.kelasku.ui.main.announcement.create.AnnouncementCreateFragment"
+        android:label="Buat Pemberitahuan 📣" />
+    <fragment
+        android:id="@+id/assignmentCreateFragment"
+        android:name="com.charuniverse.kelasku.ui.main.assignment.create.AssignmentCreateFragment"
+        android:label="Tambahkan Tugas 📚" />
 
 </navigation>

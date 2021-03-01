@@ -7,6 +7,11 @@
     android:background="@color/black"
     tools:context=".ui.main.assignment.AssignmentFragment">
 
+    <include
+        android:id="@+id/viewNoAssignment"
+        layout="@layout/view_no_assignment"
+        android:visibility="gone" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/srAssignment"
         android:layout_width="match_parent"
@@ -17,51 +22,15 @@
             android:id="@+id/recyclerAssignment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/recycler_announcement" />
+            tools:listitem="@layout/recycler_assignment" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <ScrollView
-        android:id="@+id/svNoAssignmentState"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:elevation="0dp"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="240dp"
-                android:src="@drawable/img_explore" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/josefin_bold"
-                android:lineSpacingExtra="4dp"
-                android:text="@string/no_assignment_text"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-
-    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabCreateAssignment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="16dp"
         android:src="@drawable/ic_add"
         android:visibility="gone"
         app:backgroundTint="@color/black_500"

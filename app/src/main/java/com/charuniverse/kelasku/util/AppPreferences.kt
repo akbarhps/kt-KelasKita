@@ -15,6 +15,7 @@ object AppPreferences {
     private val mUserClassName = Pair("userClassName", "")
     private val mUserClassCode = Pair("userClassCode", "")
     private val mIsUserAdmin = Pair("isUserAdmin", false)
+    private val mIsDeveloper = Pair("isDeveloper", false)
 
     fun init(context: Context) {
         preferences = context.getSharedPreferences(NAME, MODE)
@@ -52,16 +53,16 @@ object AppPreferences {
             it.putBoolean(mIsUserAdmin.first, value)
         }
 
-    fun hasUserInfo(): Boolean {
-        return userEmail.isNotBlank() &&
-                userClassName.isNotBlank() &&
-                userClassCode.isNotBlank()
-    }
+    var isDeveloper: Boolean
+        get() = preferences.getBoolean(mIsDeveloper.first, mIsDeveloper.second)
+        set(value) = preferences.edit {
+            it.putBoolean(mIsDeveloper.first, value)
+        }
 
     fun getUserInfo(): User {
         return User(
             userEmail, userClassName,
-            userClassCode, isUserAdmin
+            userClassCode, isUserAdmin, isDeveloper
         )
     }
 
@@ -70,6 +71,7 @@ object AppPreferences {
         userClassName = user.className
         userClassCode = user.classCode
         isUserAdmin = user.admin
+        isDeveloper = user.developer
     }
 
     fun deleteUserInfo() {
@@ -77,5 +79,6 @@ object AppPreferences {
         userClassName = ""
         userClassCode = ""
         isUserAdmin = false
+        isDeveloper = false
     }
 }

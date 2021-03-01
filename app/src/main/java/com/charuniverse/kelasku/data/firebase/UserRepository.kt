@@ -1,6 +1,7 @@
 package com.charuniverse.kelasku.data.firebase
 
 import com.charuniverse.kelasku.data.models.User
+import com.charuniverse.kelasku.util.AppPreferences
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -24,8 +25,9 @@ object UserRepository {
         userRef.document(user.email).set(user).await()
     }
 
-    suspend fun getCurrentUser(email: String): User? {
-        val document = userRef.document(email).get().await()
-        return document.toObject(User::class.java)
+    suspend fun getCurrentUser(email: String? = null): User {
+        val userEmail = email ?: AppPreferences.userEmail
+        val document = userRef.document(userEmail).get().await()
+        return document.toObject(User::class.java)!!
     }
 }

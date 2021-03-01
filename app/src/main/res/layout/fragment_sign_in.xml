@@ -26,18 +26,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/josefin_bold"
-                android:text="Masuk 🚀"
-                android:textColor="@color/white"
-                android:textSize="26sp" />
+                android:lineSpacingExtra="8dp"
+                android:text="@string/login_tag_line"
+                android:textSize="24sp"
+                android:theme="@style/BoldText" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilEmail"
-                style="@style/LoginTextInputLayoutStyle"
+                style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="16dp"
-                android:hint="Email">
+                android:hint="@string/email">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEmail"
@@ -50,11 +50,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPassword"
-                style="@style/LoginTextInputLayoutStyle"
+                style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="16dp"
-                android:hint="Kata Sandi">
+                android:hint="@string/password">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
@@ -72,13 +72,13 @@
                 android:layout_marginTop="24dp"
                 android:elevation="6dp"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/black_700"
-                app:cardCornerRadius="30dp">
+                app:cardCornerRadius="16dp">
 
                 <LinearLayout
-                    android:id="@+id/llSignInLoading"
+                    android:id="@+id/llSignInProgress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@drawable/bg_progress_bar"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:visibility="gone">
@@ -92,28 +92,27 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
-                        android:fontFamily="@font/josefin_bold"
-                        android:text="Loading ..."
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:text="@string/loading"
+                        android:textSize="16sp"
+                        android:theme="@style/BoldText" />
 
                 </LinearLayout>
 
+
                 <LinearLayout
-                    android:id="@+id/llSignInLogin"
+                    android:id="@+id/llSignInText"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_progress_bar"
+                    android:gravity="center">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:fontFamily="@font/josefin_bold"
-                        android:text="Masuk"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:text="@string/login"
+                        android:textSize="16sp"
+                        android:theme="@style/NormalText" />
 
                 </LinearLayout>
 
@@ -136,9 +135,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="@font/josefin_medium"
-            android:text="Belum punya akun? Daftar 🆕"
-            android:textColor="@color/white" />
+            android:text="@string/no_account"
+            android:theme="@style/NormalText" />
 
     </androidx.cardview.widget.CardView>
 

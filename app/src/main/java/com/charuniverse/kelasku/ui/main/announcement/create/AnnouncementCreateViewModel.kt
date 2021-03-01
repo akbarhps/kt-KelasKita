@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.data.retrofit.RetrofitBuilder
+import com.charuniverse.kelasku.util.AppPreferences
+import com.charuniverse.kelasku.util.Globals
 import kotlinx.coroutines.launch
 
-class CreateAnnouncementViewModel : ViewModel() {
+class AnnouncementCreateViewModel : ViewModel() {
 
     sealed class UIEvents {
         object Idle : UIEvents()
@@ -23,23 +25,31 @@ class CreateAnnouncementViewModel : ViewModel() {
 
     fun createAnnouncement(announcement: Announcement) {
         _events.value = UIEvents.Loading
-        if (announcement.title.isEmpty()) {
-            _events.value =
-                UIEvents.Error("Anda belum memasukkan judul pemberitahuan")
-        } else if (announcement.body.isEmpty()) {
-            _events.value =
-                UIEvents.Error("Anda belum memasukkan deskripsi pemberitahuan")
-        } else if (announcement.url.isNotEmpty() && !URLUtil.isValidUrl(announcement.url)) {
-            _events.value =
-                UIEvents.Error("Format url yang anda masukkan salah (harus menggunakan http://)")
-        } else {
-            addAnnouncement(announcement)
+
+        announcement.apply {
+            if (title.isBlank()) {
+                _events.value = UIEvents.Error("Anda belum memasukkan judul pemberitahuan")
+                return@apply
+            }
+
+            if (body.isBlank()) {
+                _events.value = UIEvents.Error("Anda belum memasukkan deskripsi pemberitahuan")
+                return@apply
+            }
+
+            if (url.isNotEmpty() && !URLUtil.isValidUrl(url)) {
+                _events.value = UIEvents.Error("Format url yang anda masukkan salah (harus menggunakan http://)")
+                return@apply
+            }
+
+            addAnnouncement(this)
         }
     }
 
     private fun addAnnouncement(announcement: Announcement) = viewModelScope.launch {
         _events.value = try {
             RetrofitBuilder.get().createAnnouncement(announcement)
+            Globals.refreshAnnouncement = true
             UIEvents.Success
         } catch (e: Exception) {
             UIEvents.Error(e.message.toString())
