@@ -27,7 +27,7 @@
                 android:id="@+id/tvAssignmentDetailDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Loading"
+                android:text="@string/loading"
                 android:theme="@style/NormalText" />
 
             <TextView
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:lineSpacingExtra="4dp"
-                android:text="Loading"
+                android:text="@string/loading"
                 android:textSize="26sp"
                 android:theme="@style/BoldText" />
 
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Loading"
+                android:text="@string/loading"
                 android:theme="@style/NormalText" />
 
             <View
@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="4dp"
-                android:text="Loading"
+                android:text="@string/loading"
                 android:textSize="18sp"
                 android:theme="@style/NormalText" />
 

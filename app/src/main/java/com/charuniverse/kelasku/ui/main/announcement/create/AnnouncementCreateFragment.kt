@@ -12,7 +12,6 @@ import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.ui.main.MainActivity
 import com.charuniverse.kelasku.util.AppPreferences
-import com.charuniverse.kelasku.util.Globals
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_announcement_create.*
 
@@ -34,15 +33,16 @@ class AnnouncementCreateFragment : Fragment(R.layout.fragment_announcement_creat
     private fun uiEventListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
+                is AnnouncementCreateViewModel.UIEvents.Idle -> toggleProgressBar(false)
                 is AnnouncementCreateViewModel.UIEvents.Loading -> toggleProgressBar(true)
-                is AnnouncementCreateViewModel.UIEvents.Success -> if (Globals.refreshAnnouncement) {
+                is AnnouncementCreateViewModel.UIEvents.Success -> {
                     findNavController().navigateUp()
+                    viewModel.setEventToIdle()
                 }
                 is AnnouncementCreateViewModel.UIEvents.Error -> {
                     buildSnackBar(it.error)
-                    toggleProgressBar(false)
+                    viewModel.setEventToIdle()
                 }
-                else -> Unit
             }
         })
     }
@@ -71,11 +71,11 @@ class AnnouncementCreateFragment : Fragment(R.layout.fragment_announcement_creat
     private fun toggleProgressBar(show: Boolean) {
         if (show) {
             cvCreateAnnouncement.isEnabled = false
-            tvCreateAnnouncementText.visibility = View.GONE
+            llCreateAnnouncementText.visibility = View.GONE
             llCreateAnnouncementProgress.visibility = View.VISIBLE
         } else {
             cvCreateAnnouncement.isEnabled = true
-            tvCreateAnnouncementText.visibility = View.VISIBLE
+            llCreateAnnouncementText.visibility = View.VISIBLE
             llCreateAnnouncementProgress.visibility = View.GONE
         }
     }

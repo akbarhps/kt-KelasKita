@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.charuniverse.kelasku.data.firebase.AnnouncementRepository
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.util.AppPreferences
+import com.charuniverse.kelasku.util.Constants
 import com.charuniverse.kelasku.util.Globals
 import kotlinx.coroutines.launch
 
@@ -22,8 +23,14 @@ class AnnouncementDetailViewModel : ViewModel() {
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
 
+    fun setEventToIdle() {
+        _events.value = UIEvents.Idle
+    }
+
     private val _announcement = MutableLiveData<Announcement>()
     val announcement: LiveData<Announcement> = _announcement
+
+    var shareUrl: String = Constants.ANNOUNCEMENT_URL
 
     private lateinit var announcementId: String
     private var hasReadAccess = true
@@ -34,6 +41,12 @@ class AnnouncementDetailViewModel : ViewModel() {
         val announcement = args.announcement
 
         if (announcement != null) {
+            hasReadAccess = AppPreferences.isDeveloper || announcement.classCode ==
+                    AppPreferences.userClassCode || announcement.classCode == "All"
+
+            hasDeleteAccess = AppPreferences.isDeveloper || (announcement.classCode ==
+                    AppPreferences.userClassCode && announcement.classCode != "All")
+
             announcementId = announcement.id
             _announcement.value = announcement
         }
@@ -42,6 +55,8 @@ class AnnouncementDetailViewModel : ViewModel() {
             announcementId = id
             getAnnouncementById()
         }
+
+        shareUrl += announcementId
     }
 
     fun getAnnouncementById() = viewModelScope.launch {

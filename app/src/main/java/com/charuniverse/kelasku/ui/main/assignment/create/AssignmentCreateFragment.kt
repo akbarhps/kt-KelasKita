@@ -1,10 +1,15 @@
 package com.charuniverse.kelasku.ui.main.assignment.create
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -12,12 +17,17 @@ import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.ui.main.MainActivity
 import com.charuniverse.kelasku.util.AppPreferences
-import com.charuniverse.kelasku.util.Globals
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_assignment_create.*
+import java.text.SimpleDateFormat
+import java.util.*
 
-class AssignmentCreateFragment : Fragment(R.layout.fragment_assignment_create) {
+class AssignmentCreateFragment : Fragment(R.layout.fragment_assignment_create),
+    DatePickerDialog.OnDateSetListener,
+    TimePickerDialog.OnTimeSetListener {
 
+    private val timePicked = GregorianCalendar(TimeZone.getTimeZone("GMT+7"))
+    private var endTimestamp = 0L
     private lateinit var viewModel: AssignmentCreateViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,15 +44,16 @@ class AssignmentCreateFragment : Fragment(R.layout.fragment_assignment_create) {
     private fun uiEventListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
+                is AssignmentCreateViewModel.UIEvents.Idle -> toggleProgressBar(false)
                 is AssignmentCreateViewModel.UIEvents.Loading -> toggleProgressBar(true)
-                is AssignmentCreateViewModel.UIEvents.Success -> if(Globals.refreshAssignment) {
+                is AssignmentCreateViewModel.UIEvents.Success -> {
                     findNavController().navigateUp()
+                    viewModel.setEventToIdle()
                 }
                 is AssignmentCreateViewModel.UIEvents.Error -> {
                     buildSnackBar(it.message)
-                    toggleProgressBar(false)
+                    viewModel.setEventToIdle()
                 }
-                else -> Unit
             }
         })
     }
@@ -58,26 +69,66 @@ class AssignmentCreateFragment : Fragment(R.layout.fragment_assignment_create) {
             viewModel.createAssignment(
                 Assignment(
                     course, title, description, url,
-                    AppPreferences.userEmail
+                    AppPreferences.userEmail, endTimestamp
                 )
             )
         }
+
+        cvCreateAssignmentPickDate.setOnClickListener {
+            Calendar.getInstance().let {
+                val day = it.get(Calendar.DAY_OF_MONTH)
+                val month = it.get(Calendar.MONTH)
+                val year = it.get(Calendar.YEAR)
+                DatePickerDialog(
+                    requireContext(), this, year, month, day
+                )
+            }.apply {
+                datePicker.minDate = System.currentTimeMillis() - 1000
+                show()
+            }
+        }
+    }
+
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        timePicked.set(year, month, dayOfMonth)
+        Calendar.getInstance().let {
+            val currentHour = it.get(Calendar.HOUR)
+            val currentMinute = it.get(Calendar.MINUTE)
+            TimePickerDialog(
+                requireContext(), this, currentHour, currentMinute, true
+            )
+        }.show()
+    }
+
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        timePicked.apply {
+            set(Calendar.HOUR_OF_DAY, hourOfDay)
+            set(Calendar.MINUTE, minute)
+            endTimestamp = timeInMillis / 1000
+        }
+        tvCreateAssignmentDeadline.text = convertLongToDate(endTimestamp)
     }
 
     private fun toggleProgressBar(show: Boolean) {
         if (show) {
             cvCreateAssignment.isEnabled = false
-            tvCreateAssignmentText.visibility = View.GONE
+            llCreateAssignmentText.visibility = View.GONE
             llCreateAssignmentProgress.visibility = View.VISIBLE
         } else {
             cvCreateAssignment.isEnabled = true
-            tvCreateAssignmentText.visibility = View.VISIBLE
+            llCreateAssignmentText.visibility = View.VISIBLE
             llCreateAssignmentProgress.visibility = View.GONE
         }
     }
 
     private fun buildSnackBar(message: String) {
         Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun convertLongToDate(time: Long): String {
+        val date = Date(time * 1000)
+        return SimpleDateFormat("dd/MM/yyy HH:mm").format(date)
     }
 
     private fun toggleNavigationBar(show: Boolean) {

@@ -26,7 +26,7 @@ class AssignmentFragment : Fragment(R.layout.fragment_assignment),
             .get(AssignmentViewModel::class.java)
 
         if (AppPreferences.isUserAdmin) {
-            fabCreateAssignment.visibility = View.VISIBLE
+            cvAssignmentCreate.visibility = View.VISIBLE
         }
 
         eventsListener()
@@ -67,7 +67,7 @@ class AssignmentFragment : Fragment(R.layout.fragment_assignment),
             viewModel.getAssignment()
         }
 
-        fabCreateAssignment.setOnClickListener {
+        cvAssignmentCreate.setOnClickListener {
             findNavController().navigate(
                 R.id.action_assignmentFragment_to_assignmentCreateFragment
             )

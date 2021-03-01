@@ -28,7 +28,7 @@ class AssignmentAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val assignment = assignments[position]
         holder.itemView.let {
-            it.tvAssignmentListDate.text = convertLongToDate(assignment.createTimestamp)
+            it.tvAssignmentListDate.text = convertLongToDate(assignment.endTimestamp)
             it.tvAssignmentListTitle.text = assignment.title
 
             it.setOnClickListener {

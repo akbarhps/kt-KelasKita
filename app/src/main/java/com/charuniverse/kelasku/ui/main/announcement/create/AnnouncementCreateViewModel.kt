@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.data.retrofit.RetrofitBuilder
-import com.charuniverse.kelasku.util.AppPreferences
 import com.charuniverse.kelasku.util.Globals
 import kotlinx.coroutines.launch
 
@@ -22,6 +21,10 @@ class AnnouncementCreateViewModel : ViewModel() {
 
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
+
+    fun setEventToIdle() {
+        _events.value = UIEvents.Idle
+    }
 
     fun createAnnouncement(announcement: Announcement) {
         _events.value = UIEvents.Loading
@@ -38,7 +41,8 @@ class AnnouncementCreateViewModel : ViewModel() {
             }
 
             if (url.isNotEmpty() && !URLUtil.isValidUrl(url)) {
-                _events.value = UIEvents.Error("Format url yang anda masukkan salah (harus menggunakan http://)")
+                _events.value =
+                    UIEvents.Error("Format url yang anda masukkan salah (harus menggunakan http://)")
                 return@apply
             }
 

@@ -8,8 +8,6 @@ import com.charuniverse.kelasku.data.firebase.UserRepository
 import com.charuniverse.kelasku.util.AppPreferences
 import com.charuniverse.kelasku.util.firebase.authentication.AuthenticationUtil
 import com.charuniverse.kelasku.util.firebase.messaging.MessagingUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
@@ -24,6 +22,10 @@ class ProfileViewModel : ViewModel() {
 
     private val _events = MutableLiveData<UIEvents>()
     val events: LiveData<UIEvents> = _events
+
+    fun setEventToIdle() {
+        _events.value = UIEvents.Idle
+    }
 
     fun refreshUserInfo() = viewModelScope.launch {
         _events.value = UIEvents.Loading

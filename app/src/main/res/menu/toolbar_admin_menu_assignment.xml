@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_assignment_share"
         android:icon="@drawable/ic_share"
-        android:title="Copy Link"
+        android:title="Share"
         app:showAsAction="ifRoom" />
 
     <item

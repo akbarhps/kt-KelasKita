@@ -43,12 +43,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 is ProfileViewModel.UIEvents.Success -> {
                     toggleProgressBar(false)
                     buildSnackBar("Profile sudah di update")
+                    viewModel.setEventToIdle()
                 }
-                is ProfileViewModel.UIEvents.LoggedOut -> updateUI()
                 is ProfileViewModel.UIEvents.Error -> {
                     toggleProgressBar(false)
                     buildSnackBar(it.message, SnackbarType.LOG_OUT)
+                    viewModel.setEventToIdle()
                 }
+                is ProfileViewModel.UIEvents.LoggedOut -> updateUI()
             }
         })
     }

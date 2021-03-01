@@ -16,8 +16,6 @@ import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.ui.main.MainActivity
 import com.charuniverse.kelasku.util.AppPreferences
-import com.charuniverse.kelasku.util.Constants
-import com.charuniverse.kelasku.util.Globals
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_announcement_detail.*
 import java.text.SimpleDateFormat
@@ -53,18 +51,16 @@ class AnnouncementDetailFragment : Fragment(R.layout.fragment_announcement_detai
     private fun uiEventsListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
+                is AnnouncementDetailViewModel.UIEvents.Idle -> toggleProgressBar(false)
                 is AnnouncementDetailViewModel.UIEvents.Loading -> toggleProgressBar(true)
                 is AnnouncementDetailViewModel.UIEvents.Success -> {
-                    toggleProgressBar(false)
-                    if (Globals.refreshAnnouncement) {
-                        findNavController().navigateUp()
-                    }
+                    findNavController().navigateUp()
+                    viewModel.setEventToIdle()
                 }
                 is AnnouncementDetailViewModel.UIEvents.Error -> {
                     buildSnackBar(it.message, Snackbar.LENGTH_INDEFINITE)
-                    toggleProgressBar(false)
+                    viewModel.setEventToIdle()
                 }
-                else -> toggleProgressBar(false)
             }
         })
     }
@@ -120,7 +116,7 @@ class AnnouncementDetailFragment : Fragment(R.layout.fragment_announcement_detai
                 val intent = Intent().apply {
                     type = "text/plain"
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, Constants.ANNOUNCEMENT_URL + announcementId)
+                    putExtra(Intent.EXTRA_TEXT, viewModel.shareUrl)
                 }
                 startActivity(Intent.createChooser(intent, "Bagikan ke:"))
             }
@@ -133,13 +129,15 @@ class AnnouncementDetailFragment : Fragment(R.layout.fragment_announcement_detai
         length: Int = Snackbar.LENGTH_SHORT,
         type: SnackBarType = SnackBarType.BASIC,
     ) {
+        var snackLength = length
         val snackBarType = if (message.contains(".")) {
+            snackLength = Snackbar.LENGTH_INDEFINITE
             SnackBarType.NETWORK_ERROR
         } else {
             type
         }
 
-        val snackBar = Snackbar.make(requireView(), message, length)
+        val snackBar = Snackbar.make(requireView(), message, snackLength)
         when (snackBarType) {
             SnackBarType.HIDE_ITEM -> snackBar.setAction("Sembunyikan") {
                 viewModel.hideAnnouncement()

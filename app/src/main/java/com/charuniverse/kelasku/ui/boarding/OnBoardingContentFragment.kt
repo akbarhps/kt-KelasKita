@@ -20,7 +20,7 @@ class OnBoardingContentFragment : Fragment(R.layout.fragment_on_boarding_content
     private val onBoardingImages = listOf(
         R.drawable.img_tired,
         R.drawable.img_shout,
-        R.drawable.img_tired,
+        R.drawable.img_message,
     )
 
     private val onBoardingTitle = listOf(

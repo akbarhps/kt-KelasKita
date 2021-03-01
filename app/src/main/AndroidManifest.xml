@@ -18,6 +18,17 @@
             </intent-filter>
         </service>
 
+        <!--
+            <activity
+                android:name="com.charuniverse.kelasku.ui.dev.DevActivity"
+                android:screenOrientation="portrait">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+            </activity>-->
+
         <activity
             android:name=".ui.boarding.OnBoardingActivity"
             android:screenOrientation="portrait">

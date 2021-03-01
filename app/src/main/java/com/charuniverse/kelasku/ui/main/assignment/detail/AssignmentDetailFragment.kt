@@ -17,8 +17,6 @@ import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.ui.main.MainActivity
 import com.charuniverse.kelasku.util.AppPreferences
-import com.charuniverse.kelasku.util.Constants
-import com.charuniverse.kelasku.util.Globals
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_assignment_detail.*
 import java.text.SimpleDateFormat
@@ -27,7 +25,6 @@ import java.util.*
 class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
 
     private var assignmentId: String? = null
-    private var assignmentCode: String? = null
     private val args: AssignmentDetailFragmentArgs by navArgs()
     private lateinit var viewModel: AssignmentDetailViewModel
 
@@ -54,18 +51,16 @@ class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
     private fun uiEventsListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
+                is AssignmentDetailViewModel.UIEvents.Idle -> toggleProgressBar(false)
                 is AssignmentDetailViewModel.UIEvents.Loading -> toggleProgressBar(true)
                 is AssignmentDetailViewModel.UIEvents.Success -> {
-                    toggleProgressBar(false)
-                    if (Globals.refreshAssignment) {
-                        findNavController().navigateUp()
-                    }
+                    findNavController().navigateUp()
+                    viewModel.setEventToIdle()
                 }
                 is AssignmentDetailViewModel.UIEvents.Error -> {
-                    buildSnackBar(it.message, Snackbar.LENGTH_INDEFINITE)
-                    toggleProgressBar(false)
+                    buildSnackBar(it.message, Snackbar.LENGTH_LONG)
+                    viewModel.setEventToIdle()
                 }
-                else -> toggleProgressBar(false)
             }
         })
     }
@@ -73,13 +68,12 @@ class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
     private fun assignmentListener() {
         viewModel.assignment.observe(viewLifecycleOwner, {
             assignmentId = it.id
-            assignmentCode = it.classCode
             uiHandler(it)
         })
     }
 
     private fun uiHandler(assignment: Assignment) {
-        var dateAndCreator = convertLongToDate(assignment.createTimestamp)
+        var dateAndCreator = convertLongToDate(assignment.endTimestamp)
 
         if (assignment.creator.isNotEmpty()) {
             dateAndCreator += " oleh: ${assignment.creator}"
@@ -124,7 +118,7 @@ class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
                 val intent = Intent().apply {
                     type = "text/plain"
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, Constants.ASSIGNMENT_URL + assignmentId)
+                    putExtra(Intent.EXTRA_TEXT, viewModel.shareUrl)
                 }
                 startActivity(Intent.createChooser(intent, "Bagikan ke:"))
             }
@@ -137,13 +131,15 @@ class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
         length: Int = Snackbar.LENGTH_SHORT,
         type: SnackBarType = SnackBarType.BASIC,
     ) {
+        var snackLength = length
         val snackBarType = if (message.contains(".")) {
+            snackLength = Snackbar.LENGTH_INDEFINITE
             SnackBarType.NETWORK_ERROR
         } else {
             type
         }
 
-        val snackBar = Snackbar.make(requireView(), message, length)
+        val snackBar = Snackbar.make(requireView(), message, snackLength)
         when (snackBarType) {
             SnackBarType.IGNORE_ITEM -> snackBar.setAction("Selesai") {
                 viewModel.addToIgnoreList()

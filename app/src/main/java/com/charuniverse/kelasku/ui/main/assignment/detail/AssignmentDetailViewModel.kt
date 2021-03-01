@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.charuniverse.kelasku.data.firebase.AssignmentRepository
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.util.AppPreferences
+import com.charuniverse.kelasku.util.Constants
 import com.charuniverse.kelasku.util.Globals
 import kotlinx.coroutines.launch
 
@@ -22,8 +23,14 @@ class AssignmentDetailViewModel : ViewModel() {
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
 
+    fun setEventToIdle() {
+        _events.value = UIEvents.Idle
+    }
+
     private val _assignment = MutableLiveData<Assignment>()
     val assignment: LiveData<Assignment> = _assignment
+
+    var shareUrl: String = Constants.ASSIGNMENT_URL
 
     private lateinit var assignmentId: String
     private var hasAccess = true
@@ -32,15 +39,20 @@ class AssignmentDetailViewModel : ViewModel() {
         val id = args.id
         val assignment = args.assignment
 
-        if (assignment != null) {
-            assignmentId = assignment.id
-            _assignment.value = assignment
+        assignment?.let {
+            hasAccess = AppPreferences.isDeveloper ||
+                    it.classCode == AppPreferences.userClassCode
+
+            assignmentId = it.id
+            _assignment.value = it
         }
 
-        if (id != null) {
-            assignmentId = id
+        id?.let {
+            assignmentId = it
             getAssignmentById()
         }
+
+        shareUrl += assignmentId
     }
 
     fun getAssignmentById() = viewModelScope.launch {
@@ -53,9 +65,8 @@ class AssignmentDetailViewModel : ViewModel() {
                 return@launch
             }
 
-            hasAccess =
-                AppPreferences.isDeveloper || assignment.classCode == AppPreferences.userClassCode
-
+            hasAccess = AppPreferences.isDeveloper ||
+                    assignment.classCode == AppPreferences.userClassCode
             if (!hasAccess) {
                 _events.value = UIEvents.Error("❌ Anda Tidak Dapat Mengakses Tugas Tersebut ❌")
                 return@launch

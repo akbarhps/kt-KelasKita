@@ -98,7 +98,6 @@
 
                 </LinearLayout>
 
-
                 <LinearLayout
                     android:id="@+id/llSignInText"
                     android:layout_width="match_parent"

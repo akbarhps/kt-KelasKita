@@ -26,16 +26,35 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabCreateAnnouncement"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvAnnouncementCreate"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add"
+        android:foreground="?android:attr/selectableItemBackground"
         android:visibility="gone"
-        app:backgroundTint="@color/black_500"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_time_picker"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -86,15 +86,18 @@
         android:id="@+id/cvCreateAnnouncement"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_margin="8dp"
         android:elevation="6dp"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/black_700"
+        app:cardBackgroundColor="@color/black"
+        app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:id="@+id/llCreateAnnouncementProgress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/bg_progress_bar"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -108,20 +111,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Loading"
+                android:text="@string/loading"
                 android:textSize="16sp"
                 android:theme="@style/BoldText" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvCreateAnnouncementText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Kirim Pemberitahuan 🚀"
-            android:textSize="18sp"
-            android:theme="@style/NormalText" />
+        <LinearLayout
+            android:id="@+id/llCreateAnnouncementText"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_progress_bar"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Kirim Pemberitahuan 🚀"
+                android:textSize="18sp"
+                android:theme="@style/NormalText" />
+
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 

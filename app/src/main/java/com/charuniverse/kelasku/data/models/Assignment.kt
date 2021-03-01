@@ -11,8 +11,9 @@ data class Assignment(
     val description: String = "",
     val url: String = "",
     val creator: String = "",
+    val endTimestamp: Long = 0L,
     val ignoreList: List<String> = listOf(),
     val classCode: String = AppPreferences.userClassCode,
     val createTimestamp: Long = System.currentTimeMillis() / 1000,
-    val id: String = (System.currentTimeMillis() / 1000).toString(),
+    val id: String = (createTimestamp * endTimestamp + createTimestamp).toString(),
 ) : Parcelable

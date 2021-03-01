@@ -25,7 +25,7 @@ class AnnouncementFragment : Fragment(R.layout.fragment_announcement),
             .get(AnnouncementViewModel::class.java)
 
         if (AppPreferences.isUserAdmin) {
-            fabCreateAnnouncement.visibility = View.VISIBLE
+            cvAnnouncementCreate.visibility = View.VISIBLE
         }
 
         uiEventListener()
@@ -65,7 +65,7 @@ class AnnouncementFragment : Fragment(R.layout.fragment_announcement),
             viewModel.getAnnouncement()
         }
 
-        fabCreateAnnouncement.setOnClickListener {
+        cvAnnouncementCreate.setOnClickListener {
             val direction = AnnouncementFragmentDirections
                 .actionAnnouncementFragmentToAnnouncementCreateFragment()
             findNavController().navigate(direction)

@@ -20,11 +20,68 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+                <TextView
+                    android:id="@+id/tvCreateAssignmentDeadline"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    android:text="--/--/-- --:--"
+                    android:textSize="18sp"
+                    android:theme="@style/NormalText"
+                    app:layout_constraintEnd_toStartOf="@+id/cvCreateAssignmentPickDate"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvCreateAssignmentPickDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardCornerRadius="25dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_time_picker"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="Pilih Tanggal"
+                            android:textSize="16sp"
+                            android:theme="@style/NormalText" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_clock" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilCreateAssignmentUrl"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:layout_marginTop="10dp"
                 android:hint="Link (Opsional)">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -97,15 +154,18 @@
         android:id="@+id/cvCreateAssignment"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_margin="8dp"
         android:elevation="6dp"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/black_700"
+        app:cardBackgroundColor="@color/black"
+        app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:id="@+id/llCreateAssignmentProgress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/bg_progress_bar"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -119,20 +179,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Loading"
+                android:text="@string/loading"
                 android:textSize="16sp"
                 android:theme="@style/BoldText" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvCreateAssignmentText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Post Tugas 😭"
-            android:textSize="18sp"
-            android:theme="@style/NormalText" />
+        <LinearLayout
+            android:id="@+id/llCreateAssignmentText"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_progress_bar"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Post Tugas 😢"
+                android:textSize="18sp"
+                android:theme="@style/NormalText" />
+
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
