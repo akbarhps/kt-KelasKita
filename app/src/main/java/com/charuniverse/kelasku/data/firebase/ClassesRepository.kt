@@ -20,4 +20,8 @@ object ClassesRepository {
         return documents.toObjects(Class::class.java)
     }
 
+    suspend fun addClass(classObj: Class) {
+        classRef.add(classObj).await()
+    }
+
 }

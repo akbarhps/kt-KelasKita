@@ -22,7 +22,8 @@ object AnnouncementRepository {
         val userClassCode = AppPreferences.userClassCode
         val documents = announcementRef
             .whereIn("classCode", listOf(userClassCode, "All"))
-            .orderBy("createTimestamp", Query.Direction.DESCENDING).get().await()
+            .orderBy("createTimestamp", Query.Direction.DESCENDING)
+            .get().await()
         return documents.toObjects(Announcement::class.java)
     }
 
@@ -31,11 +32,14 @@ object AnnouncementRepository {
         return document.toObject(Announcement::class.java)
     }
 
-    suspend fun hideAnnouncement(id: String) {
-        announcementRef.document(id)
-            .update(
-                "hideList", FieldValue.arrayUnion(AppPreferences.userEmail)
-            ).await()
+    suspend fun addUserToHideList(id: String) {
+        announcementRef.document(id).update(
+            "hideList", FieldValue.arrayUnion(AppPreferences.userEmail)
+        ).await()
+    }
+
+    suspend fun updateAnnouncement(announcement: Announcement) {
+        announcementRef.document(announcement.id).set(announcement).await()
     }
 
     suspend fun deleteAnnouncement(id: String) {

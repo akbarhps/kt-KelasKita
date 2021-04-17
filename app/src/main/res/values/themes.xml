@@ -2,12 +2,12 @@
     <!-- Base application theme. -->
     <style name="Theme.Kelasku" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/black_500</item>
+        <item name="colorPrimary">@color/black_700</item>
         <item name="colorPrimaryVariant">@color/black_700</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/black</item>
-        <item name="colorSecondaryVariant">@color/black</item>
+        <item name="colorSecondary">@color/black_500</item>
+        <item name="colorSecondaryVariant">@color/black_500</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorOnPrimary</item>
@@ -30,11 +30,10 @@
 
     <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="boxStrokeColor">@color/text_input_layout_color</item>
-        <item name="boxStrokeErrorColor">@color/text_input_layout_error_color</item>
-        <item name="endIconTint">@color/white</item>
         <item name="boxStrokeWidth">2dp</item>
-        <item name="hintTextColor">@color/white</item>
-        <item name="android:textColorHint">@color/white</item>
+        <item name="hintTextColor">#C1C1C1</item>
+        <item name="helperTextTextColor">@color/white</item>
+        <item name="android:textColorHint">#C1C1C1</item>
     </style>
 
     <style name="LoginButtonStyle" parent="Widget.MaterialComponents.Button">

@@ -18,21 +18,21 @@ class OnBoardingContentFragment : Fragment(R.layout.fragment_on_boarding_content
     }
 
     private val onBoardingImages = listOf(
-        R.drawable.img_tired,
-        R.drawable.img_shout,
         R.drawable.img_message,
+        R.drawable.img_shout,
+        R.drawable.img_delivery,
     )
 
     private val onBoardingTitle = listOf(
-        "Males ngebuka e-learning buat ngecek tugas?",
+        "Males buka e-learning buat ngecek tugas?",
         "Pengumuman di grup kelas sering ketutupan?",
         "Sering kelupaan tugas yang gaada di e-learning?",
     )
 
     private val onBoardingDescription = listOf(
-        "Aplikasi ini bakalan ngirimin kamu notifikasi setiap ada tugas baru",
-        "Kamu bisa ngirim pemberitahuan ke temen sekelas pake aplikasi ini",
-        "Tenang, kamu bisa nambahin tugas yang ga ke daftar. Temen sekelasmu bakalan dapet notifikasi juga loh",
+        "Tenang, kamu bakal dikirimin notifikasi setiap ada tugas baru",
+        "Mudah, di aplikasi ini kamu bisa ngirim pemberitahuan ke temen sekelas",
+        "Engga bakalan lagi kok, karena kamu juga bisa nambahin tugas yang ga ke daftar di e-learning"
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

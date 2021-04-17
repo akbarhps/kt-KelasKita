@@ -23,8 +23,8 @@ object AssignmentRepository {
         val userClassCode = AppPreferences.userClassCode
         val documents = assignmentRef
             .whereEqualTo("classCode", userClassCode)
-            .whereGreaterThanOrEqualTo("createTimestamp", lastWeekInSeconds)
-            .orderBy("createTimestamp", Query.Direction.ASCENDING)
+            .whereGreaterThanOrEqualTo("endTimestamp", lastWeekInSeconds)
+            .orderBy("endTimestamp", Query.Direction.ASCENDING)
             .get().await()
         return documents.toObjects(Assignment::class.java)
     }
@@ -34,10 +34,14 @@ object AssignmentRepository {
         return document.toObject(Assignment::class.java)
     }
 
-    suspend fun addToIgnoreList(id: String) {
+    suspend fun addUserToHideList(id: String) {
         assignmentRef.document(id).update(
-            "ignoreList", FieldValue.arrayUnion(AppPreferences.userEmail)
+            "hideList", FieldValue.arrayUnion(AppPreferences.userEmail)
         ).await()
+    }
+
+    suspend fun updateAssignment(assignment: Assignment) {
+        assignmentRef.document(assignment.id).set(assignment).await()
     }
 
     suspend fun deleteAssignment(id: String) {

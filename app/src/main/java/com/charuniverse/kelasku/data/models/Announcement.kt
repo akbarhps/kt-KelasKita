@@ -6,12 +6,13 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Announcement(
-    val title: String = "",
-    val body: String = "",
-    val url: String = "",
-    val classCode: String = AppPreferences.userClassCode,
-    val creator: String = AppPreferences.userEmail,
-    val id: String = (System.currentTimeMillis() / 1000).toString(),
-    val createTimestamp: Long = System.currentTimeMillis() / 1000,
+    var title: String = "",
+    var body: String = "",
+    var url: String = "",
+    var classCode: String = AppPreferences.userClassCode,
+    var editedBy: String = "",
     val hideList: List<String> = listOf(),
+    var createdBy: String = AppPreferences.userEmail,
+    val createTimestamp: Long = System.currentTimeMillis() / 1000,
+    val id: String = (createTimestamp + Math.random().toInt()).toString()
 ) : Parcelable

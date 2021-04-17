@@ -1,44 +1,37 @@
 package com.charuniverse.kelasku.ui.main.announcement.detail
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.ui.main.MainActivity
-import com.charuniverse.kelasku.util.AppPreferences
-import com.google.android.material.snackbar.Snackbar
+import com.charuniverse.kelasku.ui.main.dialog.ContentDetailMenuDialog
+import com.charuniverse.kelasku.util.Globals
+import com.charuniverse.kelasku.util.helper.Converter.convertLongToDate
+import com.charuniverse.kelasku.util.helper.ErrorStates
 import kotlinx.android.synthetic.main.fragment_announcement_detail.*
-import java.text.SimpleDateFormat
-import java.util.*
+import kotlinx.android.synthetic.main.view_network_error.*
+import kotlinx.android.synthetic.main.view_not_found.*
 
-class AnnouncementDetailFragment : Fragment(R.layout.fragment_announcement_detail) {
+class AnnouncementDetailFragment : Fragment(R.layout.fragment_announcement_detail),
+    ContentDetailMenuDialog.DetailMenuDialogEvents {
 
-    private var announcementId: String? = null
-    private var announcementCode: String? = null
     private lateinit var viewModel: AnnouncementDetailViewModel
     private val args: AnnouncementDetailFragmentArgs by navArgs()
 
-    enum class SnackBarType {
-        BASIC,
-        HIDE_ITEM,
-        DELETE_ITEM,
-        NETWORK_ERROR
-    }
+    private lateinit var menuDialogContent: ContentDetailMenuDialog
+    private lateinit var editDestination: NavDirections
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toggleNavigationBar(false)
-        setHasOptionsMenu(true)
+        hideNavigationBar()
 
         viewModel = ViewModelProvider(requireActivity())
             .get(AnnouncementDetailViewModel::class.java)
@@ -51,15 +44,22 @@ class AnnouncementDetailFragment : Fragment(R.layout.fragment_announcement_detai
     private fun uiEventsListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
-                is AnnouncementDetailViewModel.UIEvents.Idle -> toggleProgressBar(false)
-                is AnnouncementDetailViewModel.UIEvents.Loading -> toggleProgressBar(true)
-                is AnnouncementDetailViewModel.UIEvents.Success -> {
-                    findNavController().navigateUp()
-                    viewModel.setEventToIdle()
+                is AnnouncementDetailViewModel.UIEvents.Idle -> {
+                    hideAllStates()
+                    toggleProgressBar(false)
                 }
+                is AnnouncementDetailViewModel.UIEvents.Loading ->
+                    toggleProgressBar(true)
+                is AnnouncementDetailViewModel.UIEvents.Complete ->
+                    findNavController().navigateUp()
                 is AnnouncementDetailViewModel.UIEvents.Error -> {
-                    buildSnackBar(it.message, Snackbar.LENGTH_INDEFINITE)
-                    viewModel.setEventToIdle()
+                    hideAllStates()
+                    toggleProgressBar(false)
+                    when (it.states) {
+                        ErrorStates.NOT_FOUND -> toggleNotFoundState(true)
+                        ErrorStates.NO_ACCESS -> toggleNoAccessState(true)
+                        ErrorStates.NETWORK_ERROR -> toggleNetworkErrorState(true)
+                    }
                 }
             }
         })
@@ -67,104 +67,116 @@ class AnnouncementDetailFragment : Fragment(R.layout.fragment_announcement_detai
 
     private fun announcementListener() {
         viewModel.announcement.observe(viewLifecycleOwner, {
-            announcementId = it.id
-            announcementCode = it.classCode
             uiHandler(it)
+
+            menuDialogContent = ContentDetailMenuDialog(viewModel.permission, this)
+
+            editDestination = AnnouncementDetailFragmentDirections
+                .actionAnnouncementDetailFragmentToAnnouncementCreateFragment(it)
         })
+
+        cvNetworkErrorRetry.setOnClickListener {
+            viewModel.getAnnouncementById()
+        }
     }
 
     private fun uiHandler(announcement: Announcement) {
-        val creator = "Oleh : ${announcement.creator}"
-
-        tvAnnouncementDetailCreator.text = creator
-        tvAnnouncementDetailDate.text = convertLongToDate(announcement.createTimestamp)
+        tvAnnouncementDetailCreator.text = "📩\t: ${announcement.createdBy}"
+        tvAnnouncementDetailDate.text = "⌚ \t" + convertLongToDate(announcement.createTimestamp)
         tvAnnouncementDetailTitle.text = announcement.title
         tvAnnouncementDetailBody.text = announcement.body
 
-        if (announcement.url.isEmpty()) return
+        if (announcement.url.isNotEmpty()) {
+            cvAnnouncementDetailUrl.visibility = View.VISIBLE
+        }
 
-        cvAnnouncementDetailUrl.apply {
-            visibility = View.VISIBLE
-            setOnClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(announcement.url)))
-            }
+        cvAnnouncementDetailUrl.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(announcement.url)))
+        }
+
+        cvAnnouncementDetailMenu.visibility = View.VISIBLE
+        cvAnnouncementDetailMenu.setOnClickListener {
+            menuDialogContent.show(parentFragmentManager, null)
         }
     }
 
     private fun toggleProgressBar(isLoading: Boolean) {
-        announcementDetailProgressBar.visibility = if (isLoading) {
+        if (isLoading) {
+            cvNetworkErrorRetry.isEnabled = false
+            viewProgressBar.visibility = View.VISIBLE
+            llNetworkErrorRetryProgress.visibility = View.VISIBLE
+        } else {
+            cvNetworkErrorRetry.isEnabled = true
+            viewProgressBar.visibility = View.GONE
+            llNetworkErrorRetryProgress.visibility = View.GONE
+        }
+    }
+
+    private fun hideAllStates() {
+        toggleNotFoundState(false)
+        toggleNoAccessState(false)
+        toggleNetworkErrorState(false)
+    }
+
+    private fun toggleNotFoundState(show: Boolean) {
+        viewNotFound.visibility = if (show) {
+            tvNotFoundTitle.text = "Pemberitahuan yang kamu cari tidak ditemukan"
             View.VISIBLE
         } else {
             View.GONE
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        if (AppPreferences.isDeveloper || (AppPreferences.isUserAdmin)) {
-            inflater.inflate(R.menu.toolbar_admin_menu_announcement, menu)
+    private fun toggleNoAccessState(show: Boolean) {
+        viewNoAccess.visibility = if (show) {
+            View.VISIBLE
         } else {
-            inflater.inflate(R.menu.toolbar_menu_announcement, menu)
+            View.GONE
         }
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_announcement_hide -> buildSnackBar(type = SnackBarType.HIDE_ITEM)
-            R.id.menu_announcement_delete -> buildSnackBar(type = SnackBarType.DELETE_ITEM)
-            R.id.menu_announcement_share -> {
-                val intent = Intent().apply {
-                    type = "text/plain"
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, viewModel.shareUrl)
-                }
-                startActivity(Intent.createChooser(intent, "Bagikan ke:"))
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun buildSnackBar(
-        message: String = "Apakah anda yakin?",
-        length: Int = Snackbar.LENGTH_SHORT,
-        type: SnackBarType = SnackBarType.BASIC,
-    ) {
-        var snackLength = length
-        val snackBarType = if (message.contains(".")) {
-            snackLength = Snackbar.LENGTH_INDEFINITE
-            SnackBarType.NETWORK_ERROR
+    private fun toggleNetworkErrorState(show: Boolean) {
+        viewNetworkError.visibility = if (show) {
+            View.VISIBLE
         } else {
-            type
+            View.GONE
         }
-
-        val snackBar = Snackbar.make(requireView(), message, snackLength)
-        when (snackBarType) {
-            SnackBarType.HIDE_ITEM -> snackBar.setAction("Sembunyikan") {
-                viewModel.hideAnnouncement()
-            }
-            SnackBarType.DELETE_ITEM -> snackBar.setAction("Hapus") {
-                viewModel.deleteAnnouncement()
-            }
-            SnackBarType.NETWORK_ERROR -> snackBar.setAction("Try Again") {
-                viewModel.getAnnouncementById()
-            }
-            else -> Unit
-        }
-        snackBar.show()
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun convertLongToDate(time: Long): String {
-        val date = Date(time * 1000)
-        return "Dikirim pada: " + SimpleDateFormat("dd/MM/yyy HH:mm").format(date)
+    override fun onMenuShareClick() {
+        startActivity(Intent.createChooser(Intent().apply {
+            type = "text/plain"
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, viewModel.shareUrl)
+        }, "Bagikan ke:"))
     }
 
-    private fun toggleNavigationBar(show: Boolean) {
-        (activity as MainActivity).toggleNavigationBar(show)
+    override fun onMenuHideClick() {
+        viewModel.hideAnnouncement()
+    }
+
+    override fun onMenuEditClick() {
+        findNavController().navigate(editDestination)
+    }
+
+    override fun onMenuDeleteClick() {
+        viewModel.deleteAnnouncement()
+    }
+
+    private fun hideNavigationBar() {
+        (activity as MainActivity).toggleNavigationBar(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Globals.announcementUpdated) {
+            viewModel.getAnnouncementById()
+            Globals.announcementUpdated = false
+        }
     }
 
     override fun onDetach() {
-        toggleNavigationBar(true)
+        viewModel.setEventToIdle()
         super.onDetach()
     }
 }

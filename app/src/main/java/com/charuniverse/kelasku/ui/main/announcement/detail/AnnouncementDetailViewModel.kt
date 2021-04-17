@@ -9,6 +9,8 @@ import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.util.AppPreferences
 import com.charuniverse.kelasku.util.Constants
 import com.charuniverse.kelasku.util.Globals
+import com.charuniverse.kelasku.util.helper.ContentPermission
+import com.charuniverse.kelasku.util.helper.ErrorStates
 import kotlinx.coroutines.launch
 
 class AnnouncementDetailViewModel : ViewModel() {
@@ -16,38 +18,34 @@ class AnnouncementDetailViewModel : ViewModel() {
     sealed class UIEvents {
         object Idle : UIEvents()
         object Loading : UIEvents()
-        object Success : UIEvents()
-        class Error(val message: String) : UIEvents()
+        object Complete : UIEvents()
+        class Error(
+            val states: ErrorStates,
+            val message: String? = null
+        ) : UIEvents()
     }
 
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
 
+    private val _announcement = MutableLiveData<Announcement>()
+    val announcement: LiveData<Announcement> = _announcement
+    private lateinit var announcementId: String
+
+    var permission = ContentPermission()
+    lateinit var shareUrl: String
+
     fun setEventToIdle() {
         _events.value = UIEvents.Idle
     }
-
-    private val _announcement = MutableLiveData<Announcement>()
-    val announcement: LiveData<Announcement> = _announcement
-
-    var shareUrl: String = Constants.ANNOUNCEMENT_URL
-
-    private lateinit var announcementId: String
-    private var hasReadAccess = true
-    private var hasDeleteAccess = true
 
     fun argsHandler(args: AnnouncementDetailFragmentArgs) {
         val id = args.id
         val announcement = args.announcement
 
         if (announcement != null) {
-            hasReadAccess = AppPreferences.isDeveloper || announcement.classCode ==
-                    AppPreferences.userClassCode || announcement.classCode == "All"
-
-            hasDeleteAccess = AppPreferences.isDeveloper || (announcement.classCode ==
-                    AppPreferences.userClassCode && announcement.classCode != "All")
-
             announcementId = announcement.id
+            getAccessPermission(announcement)
             _announcement.value = announcement
         }
 
@@ -56,72 +54,68 @@ class AnnouncementDetailViewModel : ViewModel() {
             getAnnouncementById()
         }
 
-        shareUrl += announcementId
+        shareUrl = Constants.ANNOUNCEMENT_URL + announcementId
     }
 
     fun getAnnouncementById() = viewModelScope.launch {
         _events.value = UIEvents.Loading
-
         _events.value = try {
             val announcement = AnnouncementRepository.getAnnouncementById(announcementId)
             if (announcement == null) {
-                _events.value = UIEvents.Error("Tugas Tidak Ditemukan 😭")
+                _events.value = UIEvents.Error(ErrorStates.NOT_FOUND)
                 return@launch
             }
 
-            hasReadAccess = AppPreferences.isDeveloper || announcement.classCode ==
-                    AppPreferences.userClassCode || announcement.classCode == "All"
-
-            hasDeleteAccess = AppPreferences.isDeveloper || (announcement.classCode ==
-                    AppPreferences.userClassCode && announcement.classCode != "All")
-
-            if (!hasReadAccess) {
-                _events.value =
-                    UIEvents.Error("❌ Anda Tidak Dapat Mengakses Pemberitahuan Tersebut ❌")
+            getAccessPermission(announcement)
+            if (!permission.READ) {
+                _events.value = UIEvents.Error(ErrorStates.NO_ACCESS)
                 return@launch
             }
 
             _announcement.value = announcement
-
             UIEvents.Idle
         } catch (e: Exception) {
-            UIEvents.Error(e.message.toString())
+            UIEvents.Error(ErrorStates.NETWORK_ERROR, e.message.toString())
         }
     }
 
     fun hideAnnouncement() = viewModelScope.launch {
         _events.value = UIEvents.Loading
-
-        if (!hasReadAccess) {
-            _events.value =
-                UIEvents.Error("❌ Anda tidak memiliki akses untuk menyembunyikan pemberitahuan ❌")
-            return@launch
-        }
-
         _events.value = try {
-            AnnouncementRepository.hideAnnouncement(announcementId)
+            AnnouncementRepository.addUserToHideList(announcementId)
             Globals.refreshAnnouncement = true
-            UIEvents.Success
+            UIEvents.Complete
         } catch (e: Exception) {
-            UIEvents.Error(e.message.toString())
+            UIEvents.Error(ErrorStates.NETWORK_ERROR, e.message.toString())
         }
     }
 
     fun deleteAnnouncement() = viewModelScope.launch {
         _events.value = UIEvents.Loading
-
-        if (!hasDeleteAccess) {
-            _events.value = UIEvents.Error("❌ Anda tidak memiliki akses untuk menghapus ❌")
-            return@launch
-        }
-
         _events.value = try {
             AnnouncementRepository.deleteAnnouncement(announcementId)
             Globals.refreshAnnouncement = true
-            UIEvents.Success
+            UIEvents.Complete
         } catch (e: Exception) {
-            UIEvents.Error(e.message.toString())
+            UIEvents.Error(ErrorStates.NETWORK_ERROR, e.message.toString())
         }
     }
 
+    private fun getAccessPermission(obj: Announcement? = null) {
+        val pref = AppPreferences
+        val announcement = obj ?: _announcement.value ?: return
+
+        val isDeveloper = pref.isDeveloper
+        val isAdmin = pref.isUserAdmin
+
+        val hasReadPermission =
+            announcement.classCode == pref.userClassCode || announcement.classCode == "All"
+
+        val hasUpdatePermission = isDeveloper ||
+                (hasReadPermission && isAdmin && announcement.classCode != "All")
+
+        permission = ContentPermission(
+            hasReadPermission, hasUpdatePermission, hasUpdatePermission
+        )
+    }
 }

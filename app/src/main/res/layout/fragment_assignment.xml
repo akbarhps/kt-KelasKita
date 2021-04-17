@@ -28,32 +28,23 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvAssignmentCreate"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="16dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_margin="12dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:visibility="gone"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="25dp"
+        app:cardCornerRadius="@dimen/fab_radius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_time_picker"
-            android:gravity="center"
-            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_fab"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_add" />
-
-        </LinearLayout>
+            android:paddingEnd="16dp"
+            android:src="@drawable/ic_add" />
 
     </androidx.cardview.widget.CardView>
 

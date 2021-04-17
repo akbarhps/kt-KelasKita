@@ -22,6 +22,10 @@ object AuthenticationUtil {
         authRef.signInWithEmailAndPassword(email, password).await()
     }
 
+    suspend fun resetPassword(email: String) {
+        authRef.sendPasswordResetEmail(email).await()
+    }
+
     fun logout() {
         AppPreferences.deleteUserInfo()
         authRef.signOut()

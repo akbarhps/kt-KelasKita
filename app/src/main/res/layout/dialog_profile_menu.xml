@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@color/black"
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    tools:context=".ui.main.profile.ProfileMenuDialog">
+
+    <View
+        android:layout_width="30dp"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="@color/white" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvProfileDialogRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp">
+
+            <ImageView
+                android:layout_width="@dimen/dialog_content_detail_menu_img_size"
+                android:layout_height="@dimen/dialog_content_detail_menu_img_size"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_list_bullet"
+                android:padding="12dp"
+                android:src="@drawable/ic_refresh" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Refresh"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvProfileDialogLogOut"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="4dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toStartOf="@+id/cvProfileDialogConfirmLogOut"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center|start"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp">
+
+                <ImageView
+                    android:id="@+id/ivDialogMenuHide"
+                    android:layout_width="@dimen/dialog_content_detail_menu_img_size"
+                    android:layout_height="@dimen/dialog_content_detail_menu_img_size"
+                    android:background="@drawable/bg_list_bullet"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_log_out" />
+
+                <TextView
+                    android:id="@+id/tvDialogMenuHide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Log Out"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvProfileDialogConfirmLogOut"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dialog_content_detail_menu_img_size"
+            android:layout_marginEnd="16dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:visibility="gone"
+            app:cardCornerRadius="@dimen/dialog_content_detail_menu_corner_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_list_bullet"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="Konfirmasi"
+                android:theme="@style/NormalText" />
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

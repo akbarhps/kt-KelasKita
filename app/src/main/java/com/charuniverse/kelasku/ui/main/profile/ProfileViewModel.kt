@@ -16,7 +16,7 @@ class ProfileViewModel : ViewModel() {
         object Idle : UIEvents()
         object Loading : UIEvents()
         object Success : UIEvents()
-        object LoggedOut : UIEvents()
+        object Complete : UIEvents()
         class Error(val message: String) : UIEvents()
     }
 
@@ -29,12 +29,11 @@ class ProfileViewModel : ViewModel() {
 
     fun refreshUserInfo() = viewModelScope.launch {
         _events.value = UIEvents.Loading
-
         _events.value = try {
             val userData = UserRepository.getCurrentUser()
-            AppPreferences.saveUserInfo(userData)
-            MessagingUtil.subscribeToTopic(AppPreferences.userClassCode)
+            MessagingUtil.subscribeToTopic(userData.classCode)
             MessagingUtil.subscribeToTopic("All")
+            AppPreferences.saveUserInfo(userData)
             UIEvents.Success
         } catch (e: Exception) {
             UIEvents.Error(e.message.toString())
@@ -43,12 +42,11 @@ class ProfileViewModel : ViewModel() {
 
     fun logUserOut() = viewModelScope.launch {
         _events.value = UIEvents.Loading
-
         _events.value = try {
             MessagingUtil.unsubscribeToTopic(AppPreferences.userClassCode)
             MessagingUtil.unsubscribeToTopic("All")
             AuthenticationUtil.logout()
-            UIEvents.LoggedOut
+            UIEvents.Complete
         } catch (e: Exception) {
             UIEvents.Error(e.message.toString())
         }

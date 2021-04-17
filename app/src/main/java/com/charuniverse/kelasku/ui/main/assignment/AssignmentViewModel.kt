@@ -8,6 +8,7 @@ import com.charuniverse.kelasku.data.firebase.AssignmentRepository
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.util.AppPreferences
 import com.charuniverse.kelasku.util.Globals
+import com.charuniverse.kelasku.util.helper.ContentPermission
 import kotlinx.coroutines.launch
 
 class AssignmentViewModel : ViewModel() {
@@ -16,11 +17,15 @@ class AssignmentViewModel : ViewModel() {
         object Idle : UIEvents()
         object Loading : UIEvents()
         object NoData : UIEvents()
-        class Error(val error: String) : UIEvents()
+        class Error(val message: String) : UIEvents()
     }
 
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val event: LiveData<UIEvents> = _events
+
+    fun setEventToIdle() {
+        _events.value = UIEvents.Idle
+    }
 
     private val _assignments = MutableLiveData<List<Assignment>>(listOf())
     val assignments: LiveData<List<Assignment>> = _assignments
@@ -38,10 +43,8 @@ class AssignmentViewModel : ViewModel() {
     }
 
     private fun filterData(data: List<Assignment>) {
-        val userEmail = AppPreferences.userEmail
-
         val filteredData = data.filter {
-            !it.ignoreList.contains(userEmail)
+            !it.hideList.contains(AppPreferences.userEmail)
         }
 
         _assignments.value = filteredData

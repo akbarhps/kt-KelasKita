@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.charuniverse.kelasku.data.firebase.AnnouncementRepository
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.data.retrofit.RetrofitBuilder
 import com.charuniverse.kelasku.util.Globals
@@ -19,6 +20,10 @@ class AnnouncementCreateViewModel : ViewModel() {
         class Error(val error: String) : UIEvents()
     }
 
+    enum class Action {
+        ADD, EDIT
+    }
+
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
 
@@ -26,7 +31,7 @@ class AnnouncementCreateViewModel : ViewModel() {
         _events.value = UIEvents.Idle
     }
 
-    fun createAnnouncement(announcement: Announcement) {
+    fun checkAnnouncement(announcement: Announcement, action: Action) {
         _events.value = UIEvents.Loading
 
         announcement.apply {
@@ -46,7 +51,11 @@ class AnnouncementCreateViewModel : ViewModel() {
                 return@apply
             }
 
-            addAnnouncement(this)
+            if (action == Action.ADD) {
+                addAnnouncement(this)
+            } else {
+                updateAnnouncement(this)
+            }
         }
     }
 
@@ -60,4 +69,14 @@ class AnnouncementCreateViewModel : ViewModel() {
         }
     }
 
+    private fun updateAnnouncement(announcement: Announcement) = viewModelScope.launch {
+        _events.value = try {
+            AnnouncementRepository.updateAnnouncement(announcement)
+            Globals.announcementUpdated = true
+            Globals.refreshAnnouncement = true
+            UIEvents.Success
+        } catch (e: Exception) {
+            UIEvents.Error(e.message.toString())
+        }
+    }
 }

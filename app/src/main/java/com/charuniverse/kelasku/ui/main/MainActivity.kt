@@ -11,7 +11,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.charuniverse.kelasku.R
+import com.charuniverse.kelasku.ui.login.LoginActivity
 import com.charuniverse.kelasku.util.Globals
+import com.charuniverse.kelasku.util.firebase.authentication.AuthenticationUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -45,6 +47,13 @@ class MainActivity : AppCompatActivity() {
         mainBottomNav.apply {
             setupWithNavController(navController)
             setOnNavigationItemReselectedListener {}
+        }
+
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            if (!AuthenticationUtil.isUserSignedIn()) {
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
         }
     }
 

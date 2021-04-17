@@ -6,14 +6,15 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Assignment(
-    val course: String = "",
-    val title: String = "",
-    val description: String = "",
-    val url: String = "",
-    val creator: String = "",
-    val endTimestamp: Long = 0L,
-    val ignoreList: List<String> = listOf(),
+    var course: String = "",
+    var title: String = "",
+    var description: String = "",
+    var url: String = "",
+    var endTimestamp: Long = 0L,
+    var createdBy: String = "",
+    var editedBy: String = "",
+    val hideList: List<String> = listOf(),
     val classCode: String = AppPreferences.userClassCode,
     val createTimestamp: Long = System.currentTimeMillis() / 1000,
-    val id: String = (createTimestamp * endTimestamp + createTimestamp).toString(),
+    val id: String = (createTimestamp * endTimestamp).toString(),
 ) : Parcelable

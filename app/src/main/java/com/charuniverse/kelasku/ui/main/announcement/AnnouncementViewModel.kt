@@ -22,6 +22,10 @@ class AnnouncementViewModel : ViewModel() {
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
 
+    fun setEventToIdle() {
+        _events.value = UIEvents.Idle
+    }
+
     private val _announcements = MutableLiveData<List<Announcement>>(listOf())
     val announcements: LiveData<List<Announcement>> = _announcements
 

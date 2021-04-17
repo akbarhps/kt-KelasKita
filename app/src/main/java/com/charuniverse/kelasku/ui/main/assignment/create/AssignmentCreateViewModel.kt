@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.charuniverse.kelasku.data.firebase.AssignmentRepository
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.data.retrofit.RetrofitBuilder
 import com.charuniverse.kelasku.util.Globals
@@ -15,8 +16,12 @@ class AssignmentCreateViewModel : ViewModel() {
     sealed class UIEvents {
         object Idle : UIEvents()
         object Loading : UIEvents()
-        object Success : UIEvents()
+        object Complete : UIEvents()
         class Error(val message: String) : UIEvents()
+    }
+
+    enum class Action {
+        ADD, EDIT
     }
 
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
@@ -26,7 +31,7 @@ class AssignmentCreateViewModel : ViewModel() {
         _events.value = UIEvents.Idle
     }
 
-    fun createAssignment(assignment: Assignment) {
+    fun checkAssignment(assignment: Assignment, action: Action) {
         _events.value = UIEvents.Loading
 
         assignment.apply {
@@ -41,12 +46,12 @@ class AssignmentCreateViewModel : ViewModel() {
             }
 
             if (title.isBlank()) {
-                _events.value = UIEvents.Error("Anda belum memasukkan matakuliah")
+                _events.value = UIEvents.Error("Anda belum memasukkan judul tugas")
                 return
             }
 
             if (description.isBlank()) {
-                _events.value = UIEvents.Error("Anda belum memasukkan judul tugas")
+                _events.value = UIEvents.Error("Anda belum memasukkan deskripsi tugas")
                 return
             }
 
@@ -56,7 +61,11 @@ class AssignmentCreateViewModel : ViewModel() {
                 return
             }
 
-            addAssignment(this)
+            if (action == Action.ADD) {
+                addAssignment(this)
+            } else {
+                updateAssignment(this)
+            }
         }
     }
 
@@ -64,7 +73,18 @@ class AssignmentCreateViewModel : ViewModel() {
         _events.value = try {
             RetrofitBuilder.get().createAssignment(assignment)
             Globals.refreshAssignment = true
-            UIEvents.Success
+            UIEvents.Complete
+        } catch (e: Exception) {
+            UIEvents.Error(e.message.toString())
+        }
+    }
+
+    private fun updateAssignment(assignment: Assignment) = viewModelScope.launch {
+        _events.value = try {
+            AssignmentRepository.updateAssignment(assignment)
+            Globals.refreshAssignment = true
+            Globals.assignmentUpdated = true
+            UIEvents.Complete
         } catch (e: Exception) {
             UIEvents.Error(e.message.toString())
         }

@@ -1,44 +1,37 @@
 package com.charuniverse.kelasku.ui.main.assignment.detail
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.Html
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.ui.main.MainActivity
-import com.charuniverse.kelasku.util.AppPreferences
-import com.google.android.material.snackbar.Snackbar
+import com.charuniverse.kelasku.ui.main.dialog.ContentDetailMenuDialog
+import com.charuniverse.kelasku.util.Globals
+import com.charuniverse.kelasku.util.helper.Converter.convertDescription
+import com.charuniverse.kelasku.util.helper.Converter.convertLongToDate
+import com.charuniverse.kelasku.util.helper.ErrorStates
 import kotlinx.android.synthetic.main.fragment_assignment_detail.*
-import java.text.SimpleDateFormat
-import java.util.*
+import kotlinx.android.synthetic.main.view_network_error.*
 
-class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
+class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail),
+    ContentDetailMenuDialog.DetailMenuDialogEvents {
 
-    private var assignmentId: String? = null
     private val args: AssignmentDetailFragmentArgs by navArgs()
     private lateinit var viewModel: AssignmentDetailViewModel
 
-    enum class SnackBarType {
-        BASIC,
-        IGNORE_ITEM,
-        DELETE_ITEM,
-        NETWORK_ERROR
-    }
+    private lateinit var menuDialogContent: ContentDetailMenuDialog
+    private lateinit var editDestination: NavDirections
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toggleNavigationBar(false)
-        setHasOptionsMenu(true)
+        hideNavigationBar()
 
         viewModel = ViewModelProvider(requireActivity())
             .get(AssignmentDetailViewModel::class.java)
@@ -51,15 +44,22 @@ class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
     private fun uiEventsListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
-                is AssignmentDetailViewModel.UIEvents.Idle -> toggleProgressBar(false)
-                is AssignmentDetailViewModel.UIEvents.Loading -> toggleProgressBar(true)
-                is AssignmentDetailViewModel.UIEvents.Success -> {
-                    findNavController().navigateUp()
-                    viewModel.setEventToIdle()
+                is AssignmentDetailViewModel.UIEvents.Idle -> {
+                    hideAllStates()
+                    toggleProgressBar(false)
                 }
+                is AssignmentDetailViewModel.UIEvents.Loading ->
+                    toggleProgressBar(true)
+                is AssignmentDetailViewModel.UIEvents.Complete ->
+                    findNavController().navigateUp()
                 is AssignmentDetailViewModel.UIEvents.Error -> {
-                    buildSnackBar(it.message, Snackbar.LENGTH_LONG)
-                    viewModel.setEventToIdle()
+                    hideAllStates()
+                    toggleProgressBar(false)
+                    when (it.state) {
+                        ErrorStates.NOT_FOUND -> toggleNotFoundState(true)
+                        ErrorStates.NO_ACCESS -> toggleNoAccessState(true)
+                        ErrorStates.NETWORK_ERROR -> toggleNetworkErrorState(true)
+                    }
                 }
             }
         })
@@ -67,119 +67,120 @@ class AssignmentDetailFragment : Fragment(R.layout.fragment_assignment_detail) {
 
     private fun assignmentListener() {
         viewModel.assignment.observe(viewLifecycleOwner, {
-            assignmentId = it.id
-            uiHandler(it)
+            assignmentHandler(it)
+
+            menuDialogContent = ContentDetailMenuDialog(viewModel.permission, this)
+
+            editDestination = AssignmentDetailFragmentDirections
+                .actionAssignmentDetailFragmentToAssignmentCreateFragment(it)
         })
+
+        cvNetworkErrorRetry.setOnClickListener {
+            viewModel.getAssignmentById()
+        }
     }
 
-    private fun uiHandler(assignment: Assignment) {
-        var dateAndCreator = convertLongToDate(assignment.endTimestamp)
-
-        if (assignment.creator.isNotEmpty()) {
-            dateAndCreator += " oleh: ${assignment.creator}"
-        }
-
-        tvAssignmentDetailDate.text = dateAndCreator
+    private fun assignmentHandler(assignment: Assignment) {
+        tvAssignmentDetailDate.text = "⏳\t" + convertLongToDate(assignment.endTimestamp)
         tvAssignmentDetailTitle.text = assignment.title
         tvAssignmentDetailCourse.text = assignment.course
-        tvAssignmentDetailDesc.text = if (hasHTMLTag(assignment.description)) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                Html.fromHtml(assignment.description, Html.FROM_HTML_MODE_COMPACT)
-            } else {
-                Html.fromHtml(assignment.description)
-            }
-        } else {
-            assignment.description
+        tvAssignmentDetailDesc.text = convertDescription(assignment.description)
+
+        if (assignment.createdBy.isNotEmpty()) {
+            tvAssignmentDetailPostedBy.visibility = View.VISIBLE
+            tvAssignmentDetailPostedBy.text = "Oleh : ${assignment.createdBy}"
         }
 
-        if (assignment.url.isEmpty()) return
+        if (assignment.url.isNotEmpty()) {
+            cvAssignmentDetailUrl.visibility = View.VISIBLE
+        }
 
-        cvAssignmentDetailUrl.apply {
-            visibility = View.VISIBLE
-            setOnClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(assignment.url)))
-            }
+        cvAssignmentDetailUrl.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(assignment.url)))
+        }
+
+        cvAssignmentDetailMenu.visibility = View.VISIBLE
+        cvAssignmentDetailMenu.setOnClickListener {
+            menuDialogContent.show(parentFragmentManager, null)
         }
     }
 
     private fun toggleProgressBar(isLoading: Boolean) {
-        assignmentDetailProgressBar.visibility = if (isLoading) {
+        if (isLoading) {
+            cvNetworkErrorRetry.isEnabled = false
+            viewProgressBar.visibility = View.VISIBLE
+            llNetworkErrorRetryProgress.visibility = View.VISIBLE
+        } else {
+            cvNetworkErrorRetry.isEnabled = true
+            viewProgressBar.visibility = View.GONE
+            llNetworkErrorRetryProgress.visibility = View.GONE
+        }
+    }
+
+    private fun hideAllStates() {
+        toggleNotFoundState(false)
+        toggleNoAccessState(false)
+        toggleNetworkErrorState(false)
+    }
+
+    private fun toggleNotFoundState(show: Boolean) {
+        viewNotFound.visibility = if (show) {
             View.VISIBLE
         } else {
             View.GONE
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_assignment_done -> buildSnackBar(type = SnackBarType.IGNORE_ITEM)
-            R.id.menu_assignment_delete -> buildSnackBar(type = SnackBarType.DELETE_ITEM)
-            R.id.menu_assignment_share -> {
-                val intent = Intent().apply {
-                    type = "text/plain"
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, viewModel.shareUrl)
-                }
-                startActivity(Intent.createChooser(intent, "Bagikan ke:"))
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun buildSnackBar(
-        message: String = "Apakah anda yakin?",
-        length: Int = Snackbar.LENGTH_SHORT,
-        type: SnackBarType = SnackBarType.BASIC,
-    ) {
-        var snackLength = length
-        val snackBarType = if (message.contains(".")) {
-            snackLength = Snackbar.LENGTH_INDEFINITE
-            SnackBarType.NETWORK_ERROR
+    private fun toggleNoAccessState(show: Boolean) {
+        viewNoAccess.visibility = if (show) {
+            View.VISIBLE
         } else {
-            type
+            View.GONE
         }
-
-        val snackBar = Snackbar.make(requireView(), message, snackLength)
-        when (snackBarType) {
-            SnackBarType.IGNORE_ITEM -> snackBar.setAction("Selesai") {
-                viewModel.addToIgnoreList()
-            }
-            SnackBarType.DELETE_ITEM -> snackBar.setAction("Hapus") {
-                viewModel.deleteAssignment()
-            }
-            SnackBarType.NETWORK_ERROR -> snackBar.setAction("Try Again") {
-                viewModel.getAssignmentById()
-            }
-            else -> Unit
-        }
-        snackBar.show()
     }
 
-    private fun hasHTMLTag(text: String): Boolean {
-        return "<[^>]*>".toRegex().containsMatchIn(text)
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    private fun convertLongToDate(time: Long): String {
-        val date = Date(time * 1000)
-        return "Deadline: " + SimpleDateFormat("dd/MM/yyy HH:mm").format(date)
-    }
-
-    private fun toggleNavigationBar(show: Boolean) {
-        (activity as MainActivity).toggleNavigationBar(show)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        if (AppPreferences.isDeveloper || AppPreferences.isUserAdmin) {
-            inflater.inflate(R.menu.toolbar_admin_menu_assignment, menu)
+    private fun toggleNetworkErrorState(show: Boolean) {
+        viewNetworkError.visibility = if (show) {
+            View.VISIBLE
         } else {
-            inflater.inflate(R.menu.toolbar_menu_assignment, menu)
+            View.GONE
         }
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        toggleNavigationBar(true)
+    override fun onMenuShareClick() {
+        startActivity(Intent.createChooser(Intent().apply {
+            type = "text/plain"
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, viewModel.shareUrl)
+        }, "Bagikan ke : "))
+    }
+
+    override fun onMenuHideClick() {
+        viewModel.addToIgnoreList()
+    }
+
+    override fun onMenuEditClick() {
+        findNavController().navigate(editDestination)
+    }
+
+    override fun onMenuDeleteClick() {
+        viewModel.deleteAssignment()
+    }
+
+    private fun hideNavigationBar() {
+        (activity as MainActivity).toggleNavigationBar(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Globals.assignmentUpdated) {
+            viewModel.getAssignmentById()
+            Globals.assignmentUpdated = false
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.setEventToIdle()
     }
 }

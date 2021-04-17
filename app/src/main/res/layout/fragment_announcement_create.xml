@@ -24,6 +24,7 @@
                 android:id="@+id/cbAnnouncementToAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:buttonTint="@color/white"
                 android:text="Kirim ke semua"
                 android:textColor="@color/white"
                 android:visibility="gone" />
@@ -32,8 +33,9 @@
                 android:id="@+id/tilCreateAnnouncementUrl"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:hint="Link (Opsional)">
+                android:layout_height="wrap_content"
+                android:hint="Link (Opsional)"
+                app:helperText="* Harus menggunakan http://">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCreateAnnouncementUrl"
@@ -45,15 +47,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilAnnouncementTitle"
+                android:id="@+id/tilCreateAnnouncementTitle"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Judul">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etAnnouncementTitle"
+                    android:id="@+id/etCreateAnnouncementTitle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="text"
@@ -62,18 +64,19 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilAnnouncementDesc"
+                android:id="@+id/tilCreateAnnouncementDesc"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Deskripsi">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etAnnouncementDesc"
+                    android:id="@+id/etCreateAnnouncementDesc"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
+                    android:minHeight="80dp"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -90,14 +93,23 @@
         android:elevation="6dp"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardBackgroundColor="@color/black"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="@dimen/fab_radius"
         app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_fab"
+            android:gravity="center"
+            android:text="@string/btn_announcement_create"
+            android:textSize="18sp"
+            android:theme="@style/NormalText" />
 
         <LinearLayout
             android:id="@+id/llCreateAnnouncementProgress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_progress_bar"
+            android:background="@drawable/bg_fab"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -114,23 +126,6 @@
                 android:text="@string/loading"
                 android:textSize="16sp"
                 android:theme="@style/BoldText" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llCreateAnnouncementText"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/bg_progress_bar"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Kirim Pemberitahuan 🚀"
-                android:textSize="18sp"
-                android:theme="@style/NormalText" />
 
         </LinearLayout>
 

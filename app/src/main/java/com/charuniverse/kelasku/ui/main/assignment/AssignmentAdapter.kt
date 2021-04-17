@@ -16,6 +16,10 @@ class AssignmentAdapter(
     private val assignments: List<Assignment>
 ) : RecyclerView.Adapter<AssignmentAdapter.ViewHolder>() {
 
+    interface AssignmentEvents {
+        fun onItemClick(assignment: Assignment)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context)
@@ -28,7 +32,7 @@ class AssignmentAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val assignment = assignments[position]
         holder.itemView.let {
-            it.tvAssignmentListDate.text = convertLongToDate(assignment.endTimestamp)
+            it.tvAssignmentListDate.text = "${assignment.course}, ${convertLongToDate(assignment.endTimestamp)}"
             it.tvAssignmentListTitle.text = assignment.title
 
             it.setOnClickListener {
@@ -41,10 +45,6 @@ class AssignmentAdapter(
     private fun convertLongToDate(time: Long): String {
         val date = Date(time * 1000)
         return SimpleDateFormat("dd/MM/yyy HH:mm").format(date)
-    }
-
-    interface AssignmentEvents {
-        fun onItemClick(assignment: Assignment)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

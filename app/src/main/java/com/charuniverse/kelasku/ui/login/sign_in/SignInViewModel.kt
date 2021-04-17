@@ -8,8 +8,6 @@ import com.charuniverse.kelasku.data.firebase.UserRepository
 import com.charuniverse.kelasku.util.AppPreferences
 import com.charuniverse.kelasku.util.firebase.authentication.AuthenticationUtil
 import com.charuniverse.kelasku.util.firebase.messaging.MessagingUtil
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {

@@ -17,14 +17,22 @@ class SignUpViewModel : ViewModel() {
 
     sealed class UIEvents {
         object Idle : UIEvents()
-        object NoData : UIEvents()
         object Loading : UIEvents()
         object Success : UIEvents()
         class Error(val error: String) : UIEvents()
     }
 
+    sealed class SpinnerEvents {
+        object Idle : SpinnerEvents()
+        object Loading : SpinnerEvents()
+        class Error(val message: String) : SpinnerEvents()
+    }
+
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
+
+    private val _spinnerEvents = MutableLiveData<SpinnerEvents>()
+    val spinnerEvents: LiveData<SpinnerEvents> = _spinnerEvents
 
     private val _classes = MutableLiveData<List<Class>>(listOf())
     val classes: LiveData<List<Class>> = _classes
@@ -33,14 +41,17 @@ class SignUpViewModel : ViewModel() {
         getAvailableClass()
     }
 
+    fun setEventToIdle() {
+        _events.value = UIEvents.Idle
+    }
+
     fun getAvailableClass() = viewModelScope.launch {
-        if (_classes.value!!.isNotEmpty()) {
-            return@launch
-        }
-        try {
+        _spinnerEvents.value = SpinnerEvents.Loading
+        _spinnerEvents.value = try {
             _classes.value = ClassesRepository.getClasses()
+            SpinnerEvents.Idle
         } catch (e: Exception) {
-            _events.value = UIEvents.NoData
+            SpinnerEvents.Error(e.message.toString())
         }
     }
 

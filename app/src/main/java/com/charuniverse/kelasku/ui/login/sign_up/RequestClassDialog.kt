@@ -10,7 +10,7 @@ import com.charuniverse.kelasku.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.dialog_no_class.*
 
-class DialogNoClass : BottomSheetDialogFragment() {
+class RequestClassDialog : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,10 +30,6 @@ class DialogNoClass : BottomSheetDialogFragment() {
     }
 
     private fun clickListener() {
-        ivDialogNoClassClose.setOnClickListener {
-            dismiss()
-        }
-
         cvDialogNoClassChat.setOnClickListener {
             val openURL = Intent(Intent.ACTION_VIEW)
             openURL.data = Uri.parse("http://wa.me/+6281360012080")

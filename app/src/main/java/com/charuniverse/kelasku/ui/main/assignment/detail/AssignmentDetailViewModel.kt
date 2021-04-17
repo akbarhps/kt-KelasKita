@@ -9,6 +9,8 @@ import com.charuniverse.kelasku.data.models.Assignment
 import com.charuniverse.kelasku.util.AppPreferences
 import com.charuniverse.kelasku.util.Constants
 import com.charuniverse.kelasku.util.Globals
+import com.charuniverse.kelasku.util.helper.ContentPermission
+import com.charuniverse.kelasku.util.helper.ErrorStates
 import kotlinx.coroutines.launch
 
 class AssignmentDetailViewModel : ViewModel() {
@@ -16,35 +18,35 @@ class AssignmentDetailViewModel : ViewModel() {
     sealed class UIEvents {
         object Idle : UIEvents()
         object Loading : UIEvents()
-        object Success : UIEvents()
-        class Error(val message: String) : UIEvents()
+        object Complete : UIEvents()
+        class Error(
+            val state: ErrorStates,
+            val message: String? = null
+        ) : UIEvents()
     }
 
     private val _events = MutableLiveData<UIEvents>(UIEvents.Idle)
     val events: LiveData<UIEvents> = _events
 
+    private val _assignment = MutableLiveData<Assignment>()
+    val assignment: LiveData<Assignment> = _assignment
+    private lateinit var assignmentId: String
+
+    var permission = ContentPermission()
+    lateinit var shareUrl: String
+
     fun setEventToIdle() {
         _events.value = UIEvents.Idle
     }
-
-    private val _assignment = MutableLiveData<Assignment>()
-    val assignment: LiveData<Assignment> = _assignment
-
-    var shareUrl: String = Constants.ASSIGNMENT_URL
-
-    private lateinit var assignmentId: String
-    private var hasAccess = true
 
     fun argsHandler(args: AssignmentDetailFragmentArgs) {
         val id = args.id
         val assignment = args.assignment
 
         assignment?.let {
-            hasAccess = AppPreferences.isDeveloper ||
-                    it.classCode == AppPreferences.userClassCode
-
             assignmentId = it.id
-            _assignment.value = it
+            getAccessPermission(assignment)
+            _assignment.value = assignment
         }
 
         id?.let {
@@ -52,65 +54,68 @@ class AssignmentDetailViewModel : ViewModel() {
             getAssignmentById()
         }
 
-        shareUrl += assignmentId
+        shareUrl = Constants.ASSIGNMENT_URL + assignmentId
     }
 
     fun getAssignmentById() = viewModelScope.launch {
         _events.value = UIEvents.Loading
-
         _events.value = try {
             val assignment = AssignmentRepository.getAssignmentById(assignmentId)
             if (assignment == null) {
-                _events.value = UIEvents.Error("Tugas Tidak Ditemukan 😭")
+                _events.value = UIEvents.Error(ErrorStates.NOT_FOUND)
                 return@launch
             }
 
-            hasAccess = AppPreferences.isDeveloper ||
-                    assignment.classCode == AppPreferences.userClassCode
-            if (!hasAccess) {
-                _events.value = UIEvents.Error("❌ Anda Tidak Dapat Mengakses Tugas Tersebut ❌")
+            getAccessPermission(assignment)
+            if (!permission.READ) {
+                _events.value = UIEvents.Error(ErrorStates.NO_ACCESS)
                 return@launch
             }
 
             _assignment.value = assignment
-
             UIEvents.Idle
         } catch (e: Exception) {
-            UIEvents.Error(e.message.toString())
-        }
-    }
-
-    fun deleteAssignment() = viewModelScope.launch {
-        _events.value = UIEvents.Loading
-
-        if (!hasAccess) {
-            _events.value = UIEvents.Error("❌ Anda tidak memiliki akses untuk menghapus ❌")
-            return@launch
-        }
-
-        _events.value = try {
-            AssignmentRepository.deleteAssignment(assignmentId)
-            Globals.refreshAssignment = true
-            UIEvents.Success
-        } catch (e: Exception) {
-            UIEvents.Error(e.message.toString())
+            UIEvents.Error(ErrorStates.NETWORK_ERROR, e.message.toString())
         }
     }
 
     fun addToIgnoreList() = viewModelScope.launch {
         _events.value = UIEvents.Loading
-
-        if (!hasAccess) {
-            _events.value = UIEvents.Error("❌ Anda tidak memiliki akses untuk itu ❌")
-            return@launch
-        }
-
         _events.value = try {
-            AssignmentRepository.addToIgnoreList(assignmentId)
+            AssignmentRepository.addUserToHideList(assignmentId)
             Globals.refreshAssignment = true
-            UIEvents.Success
+            UIEvents.Complete
         } catch (e: Exception) {
-            UIEvents.Error(e.message.toString())
+            UIEvents.Error(ErrorStates.NETWORK_ERROR, e.message.toString())
         }
+    }
+
+    fun deleteAssignment() = viewModelScope.launch {
+        _events.value = UIEvents.Loading
+        _events.value = try {
+            AssignmentRepository.deleteAssignment(assignmentId)
+            Globals.refreshAssignment = true
+            UIEvents.Complete
+        } catch (e: Exception) {
+            UIEvents.Error(ErrorStates.NETWORK_ERROR, e.message.toString())
+        }
+    }
+
+    private fun getAccessPermission(obj: Assignment? = null) {
+        val pref = AppPreferences
+        val assignment = obj ?: _assignment.value ?: return
+
+        val hasReadPermission = assignment.classCode == pref.userClassCode
+
+        val isAdmin = pref.isUserAdmin
+
+        // check if assignment from e-learning or from user
+        // e-learning assignment has no creator
+        val hasUpdatePermission = hasReadPermission && isAdmin
+                && assignment.createdBy.isNotEmpty()
+
+        permission = ContentPermission(
+            hasReadPermission, hasUpdatePermission, hasUpdatePermission
+        )
     }
 }

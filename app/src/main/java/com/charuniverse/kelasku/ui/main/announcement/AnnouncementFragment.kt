@@ -8,52 +8,62 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Announcement
+import com.charuniverse.kelasku.ui.main.MainActivity
 import com.charuniverse.kelasku.util.AppPreferences
 import com.charuniverse.kelasku.util.Globals
-import com.google.android.material.snackbar.Snackbar
+import com.charuniverse.kelasku.util.helper.SnackBarBuilder
 import kotlinx.android.synthetic.main.fragment_announcement.*
 
 class AnnouncementFragment : Fragment(R.layout.fragment_announcement),
     AnnouncementAdapter.AnnouncementEvents {
 
+    override fun onItemClick(announcement: Announcement) {
+        val direction = AnnouncementFragmentDirections
+            .actionAnnouncementFragmentToAnnouncementDetailFragment(announcement)
+        findNavController().navigate(direction)
+    }
+
     private lateinit var viewModel: AnnouncementViewModel
+
+    private lateinit var snackbar: SnackBarBuilder
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        snackbar = SnackBarBuilder(view)
         viewModel = ViewModelProvider(requireActivity())
             .get(AnnouncementViewModel::class.java)
 
-        if (AppPreferences.isUserAdmin) {
-            cvAnnouncementCreate.visibility = View.VISIBLE
-        }
-
         uiEventListener()
-        uiManager()
+        announcementListener()
+        uiHandler()
     }
 
     private fun uiEventListener() {
         viewModel.events.observe(viewLifecycleOwner, {
-            val isLoading = when (it) {
-                is AnnouncementViewModel.UIEvents.Loading -> true
+            when (it) {
+                is AnnouncementViewModel.UIEvents.Idle -> {
+                    toggleProgressBar(false)
+                    toggleNoDataState(false)
+                }
+                is AnnouncementViewModel.UIEvents.Loading -> {
+                    toggleProgressBar(true)
+                }
                 is AnnouncementViewModel.UIEvents.NoData -> {
+                    toggleProgressBar(false)
                     toggleNoDataState(true)
-                    false
                 }
                 is AnnouncementViewModel.UIEvents.Error -> {
-                    buildSnackBar(it.error)
-                    false
-                }
-                else -> {
-                    toggleNoDataState(false)
-                    false
+                    snackbar.actionShort(it.error, "Try Again") {
+                        viewModel.getAnnouncement()
+                    }
+                    viewModel.setEventToIdle()
                 }
             }
-            toggleProgressBar(isLoading)
         })
     }
 
-    private fun uiManager() {
+    private fun announcementListener() {
         viewModel.announcements.observe(viewLifecycleOwner, {
             val announcementAdapter = AnnouncementAdapter(this, it)
             recyclerAnnouncement.apply {
@@ -61,6 +71,13 @@ class AnnouncementFragment : Fragment(R.layout.fragment_announcement),
                 adapter = announcementAdapter
             }
         })
+    }
+
+    private fun uiHandler() {
+        if (AppPreferences.isUserAdmin) {
+            cvAnnouncementCreate.visibility = View.VISIBLE
+        }
+
         srAnnouncement.setOnRefreshListener {
             viewModel.getAnnouncement()
         }
@@ -84,22 +101,11 @@ class AnnouncementFragment : Fragment(R.layout.fragment_announcement),
         srAnnouncement.isRefreshing = show
     }
 
-    private fun buildSnackBar(message: String) {
-        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
-            .setAction("Refresh") { viewModel.getAnnouncement() }
-            .show()
-    }
-
-    override fun onItemClick(announcement: Announcement) {
-        val direction = AnnouncementFragmentDirections
-            .actionAnnouncementFragmentToAnnouncementDetailFragment(announcement)
-        findNavController().navigate(direction)
-    }
-
     override fun onResume() {
-        super.onResume()
+        (activity as MainActivity).toggleNavigationBar(true)
         if (Globals.refreshAnnouncement) {
             viewModel.getAnnouncement()
         }
+        super.onResume()
     }
 }

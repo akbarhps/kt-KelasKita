@@ -8,34 +8,53 @@
     <fragment
         android:id="@+id/announcementFragment"
         android:name="com.charuniverse.kelasku.ui.main.announcement.AnnouncementFragment"
-        android:label="Pemberitahuan 📣"
+        android:label="📮 Pemberitahuan"
         tools:layout="@layout/fragment_announcement" >
         <action
             android:id="@+id/action_announcementFragment_to_announcementDetailFragment"
-            app:destination="@id/announcementDetailFragment" />
+            app:destination="@id/announcementDetailFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
         <action
             android:id="@+id/action_announcementFragment_to_announcementCreateFragment"
-            app:destination="@id/announcementCreateFragment" />
+            app:destination="@id/announcementCreateFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
     </fragment>
 
     <fragment
         android:id="@+id/assignmentFragment"
         android:name="com.charuniverse.kelasku.ui.main.assignment.AssignmentFragment"
-        android:label="Daftar Tugas 💪"
+        android:label="💪 Daftar Tugas"
         tools:layout="@layout/fragment_assignment" >
         <action
             android:id="@+id/action_assignmentFragment_to_assignmentDetailFragment"
-            app:destination="@id/assignmentDetailFragment" />
+            app:destination="@id/assignmentDetailFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
         <action
             android:id="@+id/action_assignmentFragment_to_assignmentCreateFragment"
-            app:destination="@id/assignmentCreateFragment" />
+            app:destination="@id/assignmentCreateFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.charuniverse.kelasku.ui.main.profile.ProfileFragment"
-        android:label="Profil 😎"
-        tools:layout="@layout/fragment_profile" />
+        android:label="😎 Profil"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_createClassFragment"
+            app:destination="@id/createClassFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
+        <action
+            android:id="@+id/action_profileFragment_to_editUserFragment"
+            app:destination="@id/editUserFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
+    </fragment>
     <fragment
         android:id="@+id/assignmentDetailFragment"
         android:name="com.charuniverse.kelasku.ui.main.assignment.detail.AssignmentDetailFragment"
@@ -54,11 +73,16 @@
         <deepLink
             android:id="@+id/assignmentDeepLink"
             app:uri="kelaskita.glitch.me/tugas/{id}" />
+        <action
+            android:id="@+id/action_assignmentDetailFragment_to_assignmentCreateFragment"
+            app:destination="@id/assignmentCreateFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
     </fragment>
     <fragment
         android:id="@+id/announcementDetailFragment"
         android:name="com.charuniverse.kelasku.ui.main.announcement.detail.AnnouncementDetailFragment"
-        android:label="📣">
+        android:label="📮">
         <argument
             android:name="announcement"
             android:defaultValue="@null"
@@ -72,14 +96,41 @@
         <deepLink
             android:id="@+id/announcementDeepLink"
             app:uri="kelaskita.glitch.me/pemberitahuan/{id}" />
+        <action
+            android:id="@+id/action_announcementDetailFragment_to_announcementCreateFragment"
+            app:destination="@id/announcementCreateFragment"
+            app:enterAnim="@anim/slide_bottom_to_top"
+            app:popExitAnim="@anim/slide_top_to_bottom" />
     </fragment>
     <fragment
         android:id="@+id/announcementCreateFragment"
         android:name="com.charuniverse.kelasku.ui.main.announcement.create.AnnouncementCreateFragment"
-        android:label="Buat Pemberitahuan 📣" />
+        android:label="📮">
+        <argument
+            android:name="announcement"
+            android:defaultValue="@null"
+            app:argType="com.charuniverse.kelasku.data.models.Announcement"
+            app:nullable="true" />
+    </fragment>
     <fragment
         android:id="@+id/assignmentCreateFragment"
         android:name="com.charuniverse.kelasku.ui.main.assignment.create.AssignmentCreateFragment"
-        android:label="Tambahkan Tugas 📚" />
+        android:label="📚">
+        <argument
+            android:name="assignment"
+            android:defaultValue="@null"
+            app:argType="com.charuniverse.kelasku.data.models.Assignment"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/createClassFragment"
+        android:name="com.charuniverse.kelasku.ui.main.dev_tools.create_class.CreateClassFragment"
+        android:label="Tambahkan Kelas 🏛"
+        tools:layout="@layout/fragment_create_class" />
+    <fragment
+        android:id="@+id/editUserFragment"
+        android:name="com.charuniverse.kelasku.ui.main.dev_tools.edit_user.EditUserFragment"
+        android:label="🧑"
+        tools:layout="@layout/fragment_edit_user" />
 
 </navigation>

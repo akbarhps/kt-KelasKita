@@ -29,8 +29,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="8dp"
-                    android:gravity="center"
-                    android:text="--/--/-- --:--"
+                    android:gravity="center|start"
                     android:textSize="18sp"
                     android:theme="@style/NormalText"
                     app:layout_constraintEnd_toStartOf="@+id/cvCreateAssignmentPickDate"
@@ -40,9 +39,7 @@
                     android:id="@+id/cvCreateAssignmentPickDate"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    app:cardBackgroundColor="@android:color/transparent"
-                    app:cardCornerRadius="25dp"
+                    app:cardCornerRadius="@dimen/fab_radius"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -50,7 +47,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_time_picker"
+                        android:background="@drawable/bg_fab"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:paddingStart="16dp"
@@ -80,8 +77,9 @@
                 android:id="@+id/tilCreateAssignmentUrl"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                app:helperText="* Harus menggunakan http://"
                 android:hint="Link (Opsional)">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -93,12 +91,11 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilCreateAssignmentCourse"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Matakuliah"
                 app:errorTextColor="@color/red">
@@ -116,7 +113,7 @@
                 android:id="@+id/tilCreateAssignmentTitle"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Judul Tugas">
 
@@ -133,15 +130,16 @@
                 android:id="@+id/tilCreateAssignmentDesc"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Deskripsi">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCreateAssignmentDesc"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
+                    android:minHeight="80dp"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -157,15 +155,23 @@
         android:layout_margin="8dp"
         android:elevation="6dp"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/black"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="@dimen/fab_radius"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
-            android:id="@+id/llCreateAssignmentProgress"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_progress_bar"
+            android:background="@drawable/bg_fab"
+            android:gravity="center"
+            android:text="@string/btn_assignment_create"
+            android:textSize="18sp"
+            android:theme="@style/NormalText" />
+
+        <LinearLayout
+            android:id="@+id/llAssignmentCreateProgress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_fab"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -182,23 +188,6 @@
                 android:text="@string/loading"
                 android:textSize="16sp"
                 android:theme="@style/BoldText" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llCreateAssignmentText"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/bg_progress_bar"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Post Tugas 😢"
-                android:textSize="18sp"
-                android:theme="@style/NormalText" />
 
         </LinearLayout>
 

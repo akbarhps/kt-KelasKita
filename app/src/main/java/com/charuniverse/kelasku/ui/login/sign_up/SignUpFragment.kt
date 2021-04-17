@@ -36,52 +36,87 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             .get(SignUpViewModel::class.java)
 
         uiEventsListener()
+        spinnerEventsListener()
         uiManager()
+    }
+
+    private fun spinnerEventsListener() {
+        viewModel.spinnerEvents.observe(viewLifecycleOwner, {
+            when (it) {
+                is SignUpViewModel.SpinnerEvents.Idle -> Unit
+                is SignUpViewModel.SpinnerEvents.Loading ->
+                    toggleSpinnerProgressBar(SpinnerEvents.LOADING)
+                is SignUpViewModel.SpinnerEvents.Error ->
+                    toggleSpinnerProgressBar(SpinnerEvents.ERROR)
+            }
+        })
     }
 
     private fun uiEventsListener() {
         viewModel.events.observe(viewLifecycleOwner, {
             when (it) {
                 is SignUpViewModel.UIEvents.Idle -> Unit
-                is SignUpViewModel.UIEvents.NoData -> toggleSpinnerProgressBar(SpinnerEvents.ERROR)
-                is SignUpViewModel.UIEvents.Loading -> toggleButtonProgressBar(true)
                 is SignUpViewModel.UIEvents.Success -> updateUi()
+                is SignUpViewModel.UIEvents.Loading ->
+                    toggleButtonProgressBar(true)
                 is SignUpViewModel.UIEvents.Error -> {
-                    buildSnackBar(it.error)
+                    showError(it.error)
                     toggleButtonProgressBar(false)
+                    viewModel.setEventToIdle()
                 }
             }
         })
     }
 
+    private fun showError(error: String) {
+        val emailError = error.contains("email", true)
+        val passwordError = error.contains("password", true)
+
+        if (emailError || etSignUpEmail.text.toString().isEmpty()) {
+            tilSignUpEmail.error = error
+            tilSignUpEmail.isErrorEnabled = true
+        } else if (passwordError || etSignUpPassword.text.toString().isEmpty()) {
+            tilSignUpPassword.error = error
+            tilSignUpPassword.isErrorEnabled = true
+        } else {
+            buildSnackBar(error)
+        }
+    }
+
+    private fun hideError() {
+        tilSignUpEmail.error = ""
+        tilSignUpEmail.isErrorEnabled = false
+        tilSignUpPassword.error = ""
+        tilSignUpPassword.isErrorEnabled = false
+    }
+
     private fun uiManager() {
         viewModel.classes.observe(viewLifecycleOwner, {
             toggleSpinnerProgressBar(SpinnerEvents.SUCCESS)
-            val className = viewModel.getClassName()
-            setupSpinner(className)
+            setupSpinner(viewModel.getClassName())
         })
 
         ivRefreshAvailableClass.setOnClickListener {
             startRefreshAnimation(it)
-            if (classInfo == null) {
-                toggleSpinnerProgressBar(SpinnerEvents.LOADING)
-                viewModel.getAvailableClass()
-            }
+            viewModel.getAvailableClass()
         }
 
         cvSignUp.setOnClickListener {
             hideKeyboard()
+            hideError()
+
             if (classInfo == null) {
                 buildSnackBar("Anda belum memilih kelas 🙄")
                 return@setOnClickListener
             }
+
             val email = etSignUpEmail.text.toString()
             val password = etSignUpPassword.text.toString()
             viewModel.signUp(email, password, classInfo!!.name, classInfo!!.code)
         }
 
         tvSignUpNoClass.setOnClickListener {
-            DialogNoClass().show(parentFragmentManager, null)
+            RequestClassDialog().show(parentFragmentManager, null)
         }
 
         cvOpenSignInPage.setOnClickListener {
@@ -127,11 +162,9 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
         if (show) {
             cvSignUp.isEnabled = false
             llSignUpProgress.visibility = View.VISIBLE
-            llSignUpText.visibility = View.GONE
         } else {
             cvSignUp.isEnabled = true
             llSignUpProgress.visibility = View.GONE
-            llSignUpText.visibility = View.VISIBLE
         }
     }
 

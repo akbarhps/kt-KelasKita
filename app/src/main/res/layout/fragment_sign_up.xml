@@ -38,7 +38,6 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_spinner_class"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toStartOf="@+id/ivRefreshAvailableClass"
@@ -74,6 +73,8 @@
                     android:id="@+id/ivRefreshAvailableClass"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:src="@drawable/ic_refresh"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -85,7 +86,7 @@
                 android:id="@+id/tilSignUpEmail"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/email">
 
@@ -102,7 +103,7 @@
                 android:id="@+id/tilSignUpPassword"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/password">
 
@@ -119,16 +120,25 @@
                 android:id="@+id/cvSignUp"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="26dp"
                 android:elevation="6dp"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardCornerRadius="16dp">
+                app:cardCornerRadius="@dimen/fab_radius">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_fab"
+                    android:gravity="center"
+                    android:text="@string/register"
+                    android:textSize="16sp"
+                    android:theme="@style/NormalText" />
 
                 <LinearLayout
                     android:id="@+id/llSignUpProgress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/bg_progress_bar"
+                    android:background="@drawable/bg_fab"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:visibility="gone">
@@ -148,30 +158,13 @@
 
                 </LinearLayout>
 
-
-                <LinearLayout
-                    android:id="@+id/llSignUpText"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="@drawable/bg_progress_bar"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/register"
-                        android:textSize="16sp"
-                        android:theme="@style/NormalText" />
-
-                </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/tvSignUpNoClass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="16dp"
                 android:text="@string/string_no_class"
                 android:textSize="16sp"

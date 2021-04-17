@@ -8,84 +8,142 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.charuniverse.kelasku.R
 import com.charuniverse.kelasku.data.models.Announcement
 import com.charuniverse.kelasku.ui.main.MainActivity
 import com.charuniverse.kelasku.util.AppPreferences
-import com.google.android.material.snackbar.Snackbar
+import com.charuniverse.kelasku.util.helper.SnackBarBuilder
 import kotlinx.android.synthetic.main.fragment_announcement_create.*
 
 class AnnouncementCreateFragment : Fragment(R.layout.fragment_announcement_create) {
 
+    private val args: AnnouncementCreateFragmentArgs by navArgs()
     private lateinit var viewModel: AnnouncementCreateViewModel
+
+    private lateinit var snackBar: SnackBarBuilder
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toggleNavigationBar(false)
+        hideNavigationBar()
 
+        snackBar = SnackBarBuilder(view)
         viewModel = ViewModelProvider(requireActivity())
             .get(AnnouncementCreateViewModel::class.java)
 
-        uiManager()
+        uiHandler(args.announcement)
         uiEventListener()
     }
 
-    private fun uiEventListener() {
-        viewModel.events.observe(viewLifecycleOwner, {
-            when (it) {
-                is AnnouncementCreateViewModel.UIEvents.Idle -> toggleProgressBar(false)
-                is AnnouncementCreateViewModel.UIEvents.Loading -> toggleProgressBar(true)
-                is AnnouncementCreateViewModel.UIEvents.Success -> {
-                    findNavController().navigateUp()
-                    viewModel.setEventToIdle()
-                }
-                is AnnouncementCreateViewModel.UIEvents.Error -> {
-                    buildSnackBar(it.error)
-                    viewModel.setEventToIdle()
-                }
-            }
-        })
-    }
+    private fun uiHandler(announcement: Announcement?) {
+        val newAnnouncement = announcement ?: Announcement()
 
-    private fun uiManager() {
+        announcement?.apply {
+            etCreateAnnouncementTitle.setText(title)
+            etCreateAnnouncementDesc.setText(body)
+            etCreateAnnouncementUrl.setText(url)
+
+            if (classCode == "All") {
+                cbAnnouncementToAll.isChecked = true
+            }
+        }
+
         if (AppPreferences.isDeveloper) {
             cbAnnouncementToAll.visibility = View.VISIBLE
         }
 
         cvCreateAnnouncement.setOnClickListener {
             hideKeyboard()
-            val title = etAnnouncementTitle.text.toString()
-            val body = etAnnouncementDesc.text.toString()
+            hideError()
+
+            val title = etCreateAnnouncementTitle.text.toString()
+            val body = etCreateAnnouncementDesc.text.toString()
             val url = etCreateAnnouncementUrl.text.toString()
 
-            val classCode = if (cbAnnouncementToAll.isChecked) {
-                "All"
-            } else {
-                AppPreferences.userClassCode
+            val userEmail = AppPreferences.userEmail
+            var classCode = AppPreferences.userClassCode
+            if (cbAnnouncementToAll.isChecked) {
+                classCode = "All"
             }
 
-            viewModel.createAnnouncement(Announcement(title, body, url, classCode))
+            newAnnouncement.let {
+                it.url = url
+                it.body = body
+                it.title = title
+                it.classCode = classCode
+            }
+
+            val action = if (announcement == null) {
+                newAnnouncement.createdBy = userEmail
+                AnnouncementCreateViewModel.Action.ADD
+            } else {
+                newAnnouncement.editedBy = userEmail
+                AnnouncementCreateViewModel.Action.EDIT
+            }
+
+            viewModel.checkAnnouncement(newAnnouncement, action)
         }
+    }
+
+    private fun uiEventListener() {
+        viewModel.events.observe(viewLifecycleOwner, {
+            when (it) {
+                is AnnouncementCreateViewModel.UIEvents.Idle ->
+                    toggleProgressBar(false)
+                is AnnouncementCreateViewModel.UIEvents.Loading ->
+                    toggleProgressBar(true)
+                is AnnouncementCreateViewModel.UIEvents.Success -> {
+                    findNavController().navigateUp()
+                    viewModel.setEventToIdle()
+                }
+                is AnnouncementCreateViewModel.UIEvents.Error -> {
+                    showError(it.error)
+                    viewModel.setEventToIdle()
+                }
+            }
+        })
+    }
+
+    private fun showError(error: String) {
+        val titleError = error.contains("judul")
+        val descError = error.contains("deskripsi")
+        val urlError = error.contains("url")
+
+        if (titleError) {
+            tilCreateAnnouncementTitle.isErrorEnabled = true
+            tilCreateAnnouncementTitle.error = error
+        } else if (descError) {
+            tilCreateAnnouncementDesc.isErrorEnabled = true
+            tilCreateAnnouncementDesc.error = error
+        } else if (urlError) {
+            tilCreateAnnouncementUrl.isErrorEnabled = true
+            tilCreateAnnouncementUrl.error = error
+        } else {
+            snackBar.short(error)
+        }
+    }
+
+    private fun hideError() {
+        tilCreateAnnouncementTitle.isErrorEnabled = false
+        tilCreateAnnouncementDesc.isErrorEnabled = false
+        tilCreateAnnouncementUrl.isErrorEnabled = false
+        tilCreateAnnouncementTitle.error = ""
+        tilCreateAnnouncementDesc.error = ""
+        tilCreateAnnouncementUrl.error = ""
     }
 
     private fun toggleProgressBar(show: Boolean) {
         if (show) {
             cvCreateAnnouncement.isEnabled = false
-            llCreateAnnouncementText.visibility = View.GONE
             llCreateAnnouncementProgress.visibility = View.VISIBLE
         } else {
             cvCreateAnnouncement.isEnabled = true
-            llCreateAnnouncementText.visibility = View.VISIBLE
             llCreateAnnouncementProgress.visibility = View.GONE
         }
     }
 
-    private fun buildSnackBar(message: String) {
-        Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
-    }
-
-    private fun toggleNavigationBar(show: Boolean) {
-        (activity as MainActivity).toggleNavigationBar(show)
+    private fun hideNavigationBar() {
+        (activity as MainActivity).toggleNavigationBar(false)
     }
 
     private fun hideKeyboard() {
@@ -104,7 +162,6 @@ class AnnouncementCreateFragment : Fragment(R.layout.fragment_announcement_creat
 
     override fun onDetach() {
         hideKeyboard()
-        toggleNavigationBar(true)
         super.onDetach()
     }
 

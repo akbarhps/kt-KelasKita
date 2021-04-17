@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cvRecyclerAssignmentContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?android:attr/selectableItemBackground"
@@ -18,24 +19,17 @@
         android:padding="16dp">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:cardBackgroundColor="@android:color/transparent"
-            app:cardCornerRadius="25dp">
+            android:layout_width="@dimen/recycler_image_size"
+            android:layout_height="@dimen/recycler_image_size"
+            app:cardCornerRadius="@dimen/recycler_image_radius">
 
-            <LinearLayout
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_time_picker"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_assignment" />
-
-            </LinearLayout>
+                android:layout_gravity="center"
+                android:background="@drawable/bg_list_bullet"
+                android:padding="14dp"
+                android:src="@drawable/ic_assignment" />
 
         </androidx.cardview.widget.CardView>
 
@@ -49,6 +43,8 @@
                 android:id="@+id/tvAssignmentListDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/white" />
 
             <TextView
@@ -57,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:ellipsize="end"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:textSize="16sp"
                 android:theme="@style/BoldText" />
 

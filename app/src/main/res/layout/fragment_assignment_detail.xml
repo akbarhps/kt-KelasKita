@@ -21,32 +21,35 @@
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="70dp">
+            android:paddingBottom="60dp">
 
             <TextView
                 android:id="@+id/tvAssignmentDetailDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/loading"
                 android:theme="@style/NormalText" />
-
-            <TextView
-                android:id="@+id/tvAssignmentDetailTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:lineSpacingExtra="4dp"
-                android:text="@string/loading"
-                android:textSize="26sp"
-                android:theme="@style/BoldText" />
 
             <TextView
                 android:id="@+id/tvAssignmentDetailCourse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/loading"
                 android:theme="@style/NormalText" />
+
+            <TextView
+                android:id="@+id/tvAssignmentDetailTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="26sp"
+                android:theme="@style/BoldText" />
+
+            <TextView
+                android:id="@+id/tvAssignmentDetailPostedBy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:theme="@style/NormalText"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -60,7 +63,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="4dp"
-                android:text="@string/loading"
                 android:textSize="18sp"
                 android:theme="@style/NormalText" />
 
@@ -68,39 +70,74 @@
 
     </ScrollView>
 
-    <include
-        android:id="@+id/assignmentDetailProgressBar"
-        layout="@layout/view_progress_bar"
-        android:visibility="gone" />
-
     <androidx.cardview.widget.CardView
         android:id="@+id/cvAssignmentDetailUrl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/content_detail_button_size"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="2dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:visibility="gone"
-        app:cardCornerRadius="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:cardCornerRadius="@dimen/fab_radius"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cvAssignmentDetailMenu"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/bg_progress_bar"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Buka Di Browser 🌐"
-                android:textSize="18sp"
-                android:theme="@style/NormalText" />
-
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_fab"
+            android:gravity="center"
+            android:text="@string/btn_announcement_detail"
+            android:textSize="16sp"
+            android:theme="@style/NormalText" />
 
     </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvAssignmentDetailMenu"
+        android:layout_width="@dimen/content_detail_button_size"
+        android:layout_height="@dimen/content_detail_button_size"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="2dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/fab_radius"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_fab"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:src="@drawable/ic_menu" />
+
+    </androidx.cardview.widget.CardView>
+
+    <include
+        android:id="@+id/viewProgressBar"
+        layout="@layout/view_progress_bar"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/viewNotFound"
+        layout="@layout/view_not_found"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/viewNoAccess"
+        layout="@layout/view_no_access"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/viewNetworkError"
+        layout="@layout/view_network_error"
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

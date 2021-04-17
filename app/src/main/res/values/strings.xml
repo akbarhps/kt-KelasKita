@@ -9,7 +9,7 @@
 
     <string name="password">Kata Sandi</string>
     <string name="email">Email</string>
-    <string name="login_tag_line">Hanya dengan login, semuanya beresss</string>
+    <string name="login_tag_line">Hanya dengan login, semuanya beres</string>
     <string name="login">Login</string>
 
     <string name="string_no_class"><u>Kelasku engga ada?</u></string>
@@ -21,6 +21,22 @@
     <string name="register">Daftar</string>
     <string name="register_tag_line">Daftar Akun</string>
     <string name="network_error">Terjadi Kesalahan Jaringan</string>
+    <string name="btn_announcement_detail">Buka Link 🌐</string>
+    <string name="btn_assignment_detail">Buka Di Browser 🌐</string>
+    <string name="btn_announcement_create">Post Pemberitahuan 🚀</string>
+    <string name="btn_assignment_create">Post Tugas 😢</string>
+    <string name="dialog_no_class">Jadi kelasmu belum terdaftar ya? coba chat developer aplikasi ini karena ada beberapa informasi yang dibutuhkan sebelum menambahkan kelas</string>
+    <string name="btn_dialog_no_class">Chat 👋</string>
+    <string name="view_network_error_title">Terjadi error saat menghubungkan ke server</string>
+    <string name="view_network_error_desc">Coba deh periksa jaringan kamu, udah konek belum?</string>
+    <string name="view_no_access_title">Daerah Terlarang 🚨️</string>
+    <string name="view_no_access_desc">Kamu engga boleh akses punya kelas lain ya</string>
+    <string name="view_not_found_title">Tugas yang kamu cari tidak ditemukan</string>
+    <string name="view_not_found_desc">Coba periksa lagi link yang kamu buka deh, mungkin ada yang salah</string>
+    <string name="btn_network_error_text">Coba Lagi</string>
+    <string name="btn_announcement_edit">Post Edit 🚀</string>
+    <string name="btn_create_class">Tambahkan Kelas 🏛</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_forgot_password"><u>Lupa password?</u></string>
 </resources>

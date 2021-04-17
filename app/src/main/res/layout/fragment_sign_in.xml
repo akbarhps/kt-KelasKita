@@ -32,15 +32,15 @@
                 android:theme="@style/BoldText" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilEmail"
+                android:id="@+id/tilSignInEmail"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/email">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etEmail"
+                    android:id="@+id/etSignInEmail"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textEmailAddress"
@@ -49,15 +49,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPassword"
+                android:id="@+id/tilSignInPassword"
                 style="@style/TextInputLayoutStyle"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/password">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
+                    android:id="@+id/etSignInPassword"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPassword"
@@ -69,16 +69,25 @@
                 android:id="@+id/cvSignIn"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="26dp"
                 android:elevation="6dp"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardCornerRadius="16dp">
+                app:cardCornerRadius="@dimen/fab_radius">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_fab"
+                    android:gravity="center"
+                    android:text="@string/login"
+                    android:textSize="16sp"
+                    android:theme="@style/NormalText" />
 
                 <LinearLayout
                     android:id="@+id/llSignInProgress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/bg_progress_bar"
+                    android:background="@drawable/bg_fab"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:visibility="gone">
@@ -98,24 +107,17 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/llSignInText"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="@drawable/bg_progress_bar"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/login"
-                        android:textSize="16sp"
-                        android:theme="@style/NormalText" />
-
-                </LinearLayout>
-
             </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tvSignInForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:text="@string/text_forgot_password"
+                android:textSize="16sp"
+                android:theme="@style/NormalText" />
 
         </LinearLayout>
 

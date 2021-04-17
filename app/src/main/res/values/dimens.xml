@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="content_detail_button_size">54dp</dimen>
+
+    <dimen name="dialog_content_detail_menu_img_size">44dp</dimen>
+    <dimen name="dialog_content_detail_menu_corner_size">22dp</dimen>
+    <dimen name="recycler_image_size">44dp</dimen>
+    <dimen name="recycler_image_radius">22dp</dimen>
+    <dimen name="fab_radius">8dp</dimen>
+</resources>
